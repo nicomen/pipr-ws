@@ -57,10 +57,10 @@ response_status_is ['GET' => "/test3/resized/30x30/https://abcnyheter.drpublish.
 
 Pipr::WS->config->{'sites'}->{'test4'} = {
   sizes => [ '30x30' ],
-  allowed_targets => [ 'https://brukere.startsiden.no/' ],
+  allowed_targets => [ 'https://www.google.no' ],
 };
 
-response_status_is ['GET' => "/test4/resized/30x30/https://brukere.startsiden.no/static/img/header_logo.png"], 200, "SSL works";
+response_status_is ['GET' => "/test4/resized/30x30/https://www.google.no/images/branding/googleg/1x/googleg_standard_color_128dp.png"], 200, "SSL works";
 
 # TODO: patterns without / has to be checked as if they had a slash (against host), or else: https://foo.com matches https://foo.com@someother.server.com
 
