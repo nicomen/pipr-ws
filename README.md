@@ -69,3 +69,14 @@ Development:
 
 Production:
   bin/app.pl --environment production
+
+
+# Dependencies:
+libgd-dev
+
+
+# TODO
+- Add functionality for limiting access. This group can fetch the picture from
+  externally, this other group can only get out local cache.
+- Add fucntionlaity for hashes and other goodies.
+- Addapt for "commercial" release.
