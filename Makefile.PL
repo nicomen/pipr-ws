@@ -17,7 +17,7 @@ test_requires 'Test::More';
 # Perl modules needed at run-time
 requires 'YAML';
 requires 'Crypt::SSLeay'; # SSL Support
-requires 'Dancer' => 1.3118;
+requires 'Dancer' => 1.3202;
 requires 'GD' => 0;
 requires 'IO::Socket::SSL' => 0;
 requires 'JSON::Any' => 0;
@@ -38,7 +38,7 @@ requires 'File::Share' => 0;
 requires 'File::Slurp' => 0;
 requires 'Template::Plugin::DataPrinter' => 0;
 
-dpkg_requires 'libjs-jquery' => 0;
+requires 'Modern::Perl' => '1.20150127';
 
 install_script glob('bin/*');
 
