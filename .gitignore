@@ -5,3 +5,6 @@ thumb_cache
 logs
 MANIFEST
 MANIFEST.skip
+META.yml
+MYMETA.json
+inc/
