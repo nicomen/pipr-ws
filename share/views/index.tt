@@ -3,7 +3,6 @@
 <p>This service lets you scale/crop and modify images on-the-fly and cached. You can perform actions thru the URL.</p>
 
 <h2>Examples:</h2>
-<pre>
   [%- extern_url = 'http://csp.picsearch.com/img/S/n/6/2/title_Sn62sq8Ywlafge8SgEWyzw' -%]
   [%- extern_url = 'http://csp.picsearch.com/img/G/t/6/l/title_Gt6lWCcSuJvaatlRgDSv3Q' -%]
   [%- ex_uri = request.uri_for('/demo/resized/100x100/' _ extern_url); -%]
@@ -30,8 +29,6 @@
     [%- END -%]
   [%- END -%]
   </div>
-</pre>
-<p>Below is the current config in use with allowed targets and sizes.</p>
-
+<p style="clear: both">Below is the current config in use with allowed targets and sizes.</p>
 [% USE DataPrinter %]
 [% DataPrinter.dump_html( sites ) %]
