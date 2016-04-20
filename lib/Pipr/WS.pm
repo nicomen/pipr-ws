@@ -176,6 +176,19 @@ get '/*/*/*/**' => sub {
                 format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             }
         }
+        when ('scale_crop') {
+            return thumbnail $local_image => [
+                resize => {
+                    w => $width, h => $height, s => 'min'
+                },
+                crop => {
+                    w => $width, h => $height, a => 'cm'
+                },
+              ],
+            {
+                format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
+            };
+        }
         when ('cropped') {
             return thumbnail $local_image => [
                 crop => {

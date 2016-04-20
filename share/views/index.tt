@@ -13,6 +13,8 @@
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/resized/50x50/' _ extern_url); -%]
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
+  [%- ex_uri = request.uri_for('/demo/scale_crop/100x100/' _ extern_url); -%]
+  <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/cropped/100x100/' _ extern_url); -%]
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/cropped/100x100,100x100/' _ extern_url); -%]
