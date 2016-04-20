@@ -128,10 +128,28 @@ get '/*/dims/**' => sub {
     };
 };
 
+# support uploadcare style
+get '/*/-/*/*/*/**' => sub {
+   my ($site, $cmd, $params, $param2, $url ) = splat;
+
+   $url = get_url("$site/-/$cmd/$params/$param2");
+
+   if ($cmd eq 'scale_crop' && $param2 eq 'center') {
+       return gen_image($site, 'scale_crop_centered', $params, $url);
+   }
+   return do { debug 'illegal command'; status '401'; };
+};
+
 get '/*/*/*/**' => sub {
     my ( $site, $cmd, $params, $url ) = splat;
 
     $url = get_url("$site/$cmd/$params");
+
+    return gen_image($site, $cmd, $params, $url);
+};
+
+sub gen_image {
+    my ($site, $cmd, $params, $url) = @_;
 
     return do { debug 'no site set';    status 'not_found' } if !$site;
     return do { debug 'no command set'; status 'not_found' } if !$cmd;
@@ -176,7 +194,7 @@ get '/*/*/*/**' => sub {
                 format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             }
         }
-        when ('scale_crop') {
+        when ('scale_crop_centered') {
             return thumbnail $local_image => [
                 resize => {
                     w => $width, h => $height, s => 'min'
