@@ -50,6 +50,6 @@ sites:
          /?files: http://dev.abcnyheter.no/files%s
          /?drfront: http://smooth-storage.cdn.aptoma.no/users/drf-abcnyheter%s
   rg: 
-     sizes: [ '110x90', '230x200' ]
+     sizes: [ '110x90', '230x200', '711x470', '93x70' ]
      allowed_targets: [ 'http' ]
      
