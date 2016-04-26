@@ -49,3 +49,7 @@ sites:
      shortcuts:
          /?files: http://dev.abcnyheter.no/files%s
          /?drfront: http://smooth-storage.cdn.aptoma.no/users/drf-abcnyheter%s
+  rg: 
+     sizes: [ '110x90', '230x200' ]
+     allowed_targets: [ 'http' ]
+     
