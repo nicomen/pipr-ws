@@ -36,20 +36,3 @@ plugins:
     Thumbnail:
         cache: thumb_cache
 
-sites:
-  demo:
-     sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '76.8x43.2', '300x50', '169x169' ]
-     allowed_targets: [ 'http://csp.picsearch.com' ]
-  test:
-     sizes: [ '30x30', '100x30', '30x', 'x30' ]
-     allowed_targets: [ 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
-  abcn:
-     sizes: [ '972x', '680x', '486x', '243x' ]
-     allowed_targets: [ 'http://dev.abcnyheter.no', '/files', 'files', 'drfront', 'http://csp.picsearch.com', 'https://abcnyheter.drpublish.aptoma.no/', 'http://smooth-storage.cdn.aptoma.no/' ]
-     shortcuts:
-         /?files: http://dev.abcnyheter.no/files%s
-         /?drfront: http://smooth-storage.cdn.aptoma.no/users/drf-abcnyheter%s
-  rg: 
-     sizes: [ '110x90', '230x200', '711x470', '93x70' ]
-     allowed_targets: [ 'http' ]
-     
