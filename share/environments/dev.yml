@@ -36,3 +36,4 @@ plugins:
     Thumbnail:
         cache: thumb_cache
 
+log_path: /var/log
