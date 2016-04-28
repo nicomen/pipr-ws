@@ -1,0 +1,5 @@
+*.pd linguist-language=Perl
+*.pm linguist-language=Perl
+*.pl linguist-language=Perl
+*.pod linguist-language=Perl
+*.t linguist-language=Perl

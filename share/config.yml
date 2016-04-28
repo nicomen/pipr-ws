@@ -40,27 +40,19 @@ cache_dir: '/tmp/pipr/cache'
 restrict_targets: 1
 
 sites:
-  test:
-     sizes: [ '30x30', '100x30', '30x', 'x30' ]
-     allowed_targets: [ 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
   demo:
      sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '76.8x43.2', '300x50', '169x169' ]
      allowed_targets: [ 'http://csp.picsearch.com' ]
-  hvordan:
-     sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '169x169' ]
-     allowed_targets: [ 'http://hvordan.no', 'http://csp.picsearch.com' ]
-  overblikk:
-     sizes: [ '972x', '486x', '600x200', '300x300', '600x300', '200x600', '150x400', '400x150', '300x200', '400x200', '200x400' ]
+  rg:
+     sizes: [ '110x90', '230x200', '711x470', '93x70' ]
      allowed_targets: [ 'http' ]
-  abcn:
-     sizes: [ '980x', '972x', '680x', '486x', '243x', '210x', '122x' ]
-     allowed_targets: [ '\A https?://([^/+]\.)?abcnyheter\.no', 'http://csp\.picsearch\.com', 'https://abcnyheter\.drpublish\.aptoma\.no/', 'http://smooth-storage\.cdn\.aptoma\.no/', 'http://ws\.vipr\.startsiden\.no/' , 'https://wsvipr\.startsiden\.no']
-     shortcuts:
-         /?files: http://%ENV_SUBDOMAIN%.abcnyheter.no/files%s
-         /?drf(ront)?: http://abcnyheter.cdn.drfront.aptoma.no/users/drf-abcnyheter%s
-         /?drp: https://abcnyheter.drpublish.aptoma.no/out/images/article%s
-
-
-log_path: /var/log
+  test:
+     sizes: [ '30x30', '100x30', '30x', 'x30' ]
+     allowed_targets: [ 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
+            
+log_path: .
 log_file: pipr-ws_app.log
 logger_format: %U [%P] %L @%D> %m in %f l. %l
+
+allow_local_access: 1
+
