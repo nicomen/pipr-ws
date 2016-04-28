@@ -30,10 +30,4 @@ auto_reload: 0
 
 allow_local_access: 1
 
-cache_dir: cache
-
-plugins:
-    Thumbnail:
-        cache: thumb_cache
-
 log_path: /var/log
