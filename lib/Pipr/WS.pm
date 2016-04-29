@@ -40,6 +40,7 @@ BEGIN {
 }
 
 my $ua = Startsiden::LWPx::ParanoidAgent->new(
+      agent => 'Reisegiganten PiPr',
       ssl_opts => {
          verify_hostname => 0,
          SSL_verify_mode => SSL_VERIFY_NONE,
