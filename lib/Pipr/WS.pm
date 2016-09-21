@@ -299,6 +299,10 @@ sub download_url {
         }
     }
 
+    for my $repl (@{ $site_config->{replacements} || [] }) {
+        $url =~ s/$repl->[0]/$repl->[1]/;
+    }
+
     $url =~ s{^(https?):/(?:[^/])}{$1/}mx;
 
     if ($url !~ m{ \A (https?|ftp)}gmx) {
