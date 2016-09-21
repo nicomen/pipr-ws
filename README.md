@@ -28,12 +28,12 @@ The current configuration is shown together with examples on the root page of th
 Example:
 
 ````
-    abcn   {
+    example   {
         allowed_targets   [
-            [0] "http://www.abcnyheter.no",
+            [0] "http://www.server.com",
             [1] "files"
         ],
-        prefix   "http://www.abcnyheter.no/",
+        prefix   "http://www.server.com/",
         sizes    [
             [0] "972x",
             [1] "486x"
@@ -41,8 +41,7 @@ Example:
     },
 ````
 
-Means that at http://pipr-ws/abcn/ the following sizes are allowed to be used with the /resized/ action. Only images that are hosted on
-http://www.abcnyheter.no (and relative url 'files') are allowed (allowed_targets), and if a relative URL is given, it will prepend http://www.abcnyheter.no to it (prefix)
+Means that at http://pipr-ws/example/ the following sizes are allowed to be used with the /resized/ action. Only images that are hosted on http://www.server.com (and relative url 'files') are allowed (allowed_targets), and if a relative URL is given, it will prepend http://www.server.com to it (prefix)
 
 For environment specific settings, check the files in the 'enviroments' directory.
 
@@ -50,16 +49,7 @@ The plan is to move to a simpler strictly Plack-based service, but the current o
 
 Usage:
 
-  http://dev-pipr.startsiden.dev/abcn/resized/972x/http://www.abcnyheter.no/files/drfront/images/2014/03/24/c=33,86,617,311;w=680;h=343;72549.jpg
-
-Deployment:
-
-  The current deployment on dev-pipr inclues a varnish front that caches on top of the web service.
-  The web service runs as a starman application listenitng to a socket, that nginx communicates to
-
-  The setup uses 'salt' and is available here: http://git.startsiden.no/operations/saltstack/blob/master/products/pipr-ws/backend.sls
-
-  It includes init.d for starman, cronjob for cleaning up cache once a day, varnish setup and nginx setup.
+  http://pipr-server/abcn/resized/972x/http://server.com/image.jpg?foo=1&bar=2
 
 Tests:
   prove -lv t
@@ -79,4 +69,6 @@ libgd-dev
 - Add functionality for limiting access. This group can fetch the picture from
   externally, this other group can only get out local cache.
 - Add fucntionlaity for hashes and other goodies.
-- Addapt for "commercial" release.
+- Adapt for "commercial" release.
+- Allow registering an URL upfront so that one does not expose internal details about original URLs
+- Add better usage docs

@@ -27,7 +27,7 @@ use Cwd;
 use URI;
 use URI::Escape;
 
-our $VERSION = '15.38.3';
+our $VERSION = '16.38.1';
 
 use Net::SSL ();
 BEGIN {
@@ -297,6 +297,10 @@ sub download_url {
             $url = sprintf $target, ($url);
             last;
         }
+    }
+
+    for my $repl (@{ $site_config->{replacements} || [] }) {
+        $url =~ s/$repl->[0]/$repl->[1]/;
     }
 
     $url =~ s{^(https?):/(?:[^/])}{$1/}mx;
