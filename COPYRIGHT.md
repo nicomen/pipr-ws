@@ -1,3 +1,4 @@
-Copyright ABC Startsiden
-========================
-All code in this repository is the sole property of ABC Startsiden AS unless otherwise stated.
+License: Artistic license
+Copyright: ABC Startsiden 2013-1015, Nicolas Mendoza 2013-
+
+
