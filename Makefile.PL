@@ -39,6 +39,8 @@ requires 'File::Slurp' => 0;
 
 requires 'Modern::Perl' => '1.20150127';
 
+requires 'Template::Toolkit' => 0;
+
 install_script glob('bin/*');
 
 install_share 'share';
