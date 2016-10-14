@@ -36,7 +36,6 @@ requires 'Image::Size' => 0;
 requires 'HTML::TreeBuilder' => 0;
 requires 'File::Share' => 0;
 requires 'File::Slurp' => 0;
-requires 'Template::Plugin::DataPrinter' => 0;
 
 requires 'Modern::Perl' => '1.20150127';
 
