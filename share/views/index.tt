@@ -32,5 +32,5 @@
   [%- END -%]
   </div>
 <p style="clear: both">Below is the current config in use with allowed targets and sizes.</p>
-[% USE DataPrinter %]
-[% DataPrinter.dump_html( sites ) %]
+[% USE Dumper %]
+[% Dumper.dump_html( sites ) %]
