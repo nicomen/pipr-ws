@@ -29,16 +29,6 @@ use URI::Escape;
 
 our $VERSION = '16.38.1';
 
-use Net::SSL ();
-BEGIN {
-    # Support for BigIP SSL (http://superuser.com/questions/439038/ssl-trouble-in-perls-lwp-after-debian-wheezy-upgrade)
-    { no warnings;
-       $Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL
-    }
-    $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-#    $ENV{HTTPS_VERSION} = 3;
-}
-
 my $ua = Startsiden::LWPx::ParanoidAgent->new(
       agent => 'Reisegiganten PiPr',
       ssl_opts => {
