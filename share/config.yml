@@ -49,7 +49,7 @@ sites:
      replacements: [ [ 'www\.kuoni-cmp\.com', 'www.dercmp.com' ] ]
   test:
      sizes: [ '30x30', '100x30', '30x', 'x30' ]
-     allowed_targets: [ 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
+     allowed_targets: [ 'public/images/empty.jpg', 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
     
 log_path: .
 log_file: pipr-ws_app.log

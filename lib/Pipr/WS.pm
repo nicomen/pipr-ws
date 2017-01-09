@@ -176,29 +176,32 @@ sub gen_image {
 
     header('Cache-Control' => 'public, max-age=86400');
 
-    given ($cmd) {
-        when ('resized') {
+    my $switch = {
+        'resized' => sub {
+            my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
             return resize $local_image => {
-                w => $width, h => $height, s => 'force'
+              w => $width, h => $height, s => 'force'
             },
             {
-                format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
+              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             }
-        }
-        when ('scale_crop_centered') {
+        },
+        'scale_crop_centered' => sub {
+            my ($width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
-                resize => {
+                  resize => {
                     w => $width, h => $height, s => 'min'
-                },
-                crop => {
+                  },
+                  crop => {
                     w => $width, h => $height, a => 'cm'
-                },
-              ],
+                  },
+            ],
             {
-                format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
+              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             };
-        }
-        when ('cropped') {
+        },
+        'cropped' => sub  {
+            my ($width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
                 crop => {
                     w => $width + $x, h => $height + $y, a => 'lt'
@@ -206,12 +209,13 @@ sub gen_image {
                 crop => {
                     w => $width, h => $height, a => 'rb'
                 },
-              ],
+            ],
             {
-                format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
+              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             };
-        }
-        when ('thumbnail') {
+        },
+        'thumbnail' => sub {
+            my ($width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
                 crop => {
                     w => 200, h => 200, a => 'lt'
@@ -219,15 +223,25 @@ sub gen_image {
                 resize => {
                     w => $width, h => $height, s => 'min'
                 },
-              ],
+            ],
             {
-                format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
+              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7
             };
+        },
+        'default' => sub {
+            return do { debug 'illegal command'; status '401'; };
         }
-        default {
-            return do { debug 'illegal command'; status '401'; }
-        }
-    }
+  };
+
+  eval {
+      my $body = $switch->{$cmd} ? $switch->{$cmd}->($local_image, $width, $height, $x, $y, $thumb_cache) : $switch->{'default'}->();
+      die $body if $body =~ /Internal Server Error/;
+      return $body;
+  } or do {
+      error 'Unable to load image: ' . $@;
+      status '400';
+      return;
+  };
 };
 
 sub get_image_from_url {

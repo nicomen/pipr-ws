@@ -25,6 +25,9 @@ response_status_is ['GET' => "/test/resized/30x30/$test_image_path"], 200, "resp
 response_status_is ['GET' => "/test/resized/30x30/non-existing-image"], 404, "non-existing image returns 404";
 response_status_is ['GET' => "/test/resized/30x30/http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image"], 404, "non-existing remote image returns 404";
 
+my $empty_image_path = "public/images/empty.jpg";
+response_status_is ['GET' => "/test/resized/30x30/$empty_image_path"], 400, "response status is 400 for /test/resized/30x30/$empty_image_path";
+
 my $image;
 
 $image = dancer_response(GET => "/test/resized/30x30/$test_image_path")->content;
