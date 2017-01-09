@@ -187,7 +187,7 @@ sub gen_image {
             }
         },
         'scale_crop_centered' => sub {
-            my ($width, $height, $x, $y, $thumb_cache) = @_;
+            my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
                   resize => {
                     w => $width, h => $height, s => 'min'
@@ -201,7 +201,7 @@ sub gen_image {
             };
         },
         'cropped' => sub  {
-            my ($width, $height, $x, $y, $thumb_cache) = @_;
+            my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
                 crop => {
                     w => $width + $x, h => $height + $y, a => 'lt'
@@ -215,7 +215,7 @@ sub gen_image {
             };
         },
         'thumbnail' => sub {
-            my ($width, $height, $x, $y, $thumb_cache) = @_;
+            my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
             return thumbnail $local_image => [
                 crop => {
                     w => 200, h => 200, a => 'lt'
