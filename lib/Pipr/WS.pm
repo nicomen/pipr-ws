@@ -27,7 +27,7 @@ use Cwd;
 use URI;
 use URI::Escape;
 
-our $VERSION = '17.02.1';
+our $VERSION = '17.02.2';
 
 my $ua = Startsiden::LWPx::ParanoidAgent->new(
       agent => 'Reisegiganten PiPr',
