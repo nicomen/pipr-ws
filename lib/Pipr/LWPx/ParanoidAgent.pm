@@ -1,4 +1,4 @@
-package Startsiden::LWPx::ParanoidAgent;
+package Pipr::LWPx::ParanoidAgent;
 
 use strict;
 use warnings;

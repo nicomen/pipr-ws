@@ -15,7 +15,7 @@ use File::Type;
 use HTML::TreeBuilder;
 use Image::Size;
 use IO::Socket::SSL qw( SSL_VERIFY_NONE );
-use Startsiden::LWPx::ParanoidAgent;
+use Pipr::LWPx::ParanoidAgent;
 use LWP::UserAgent::Cached;
 use List::Util;
 use Digest::MD5 qw(md5_hex);
@@ -27,9 +27,9 @@ use Cwd;
 use URI;
 use URI::Escape;
 
-our $VERSION = '17.02.2';
+our $VERSION = '17.27.1';
 
-my $ua = Startsiden::LWPx::ParanoidAgent->new(
+my $ua = Pipr::LWPx::ParanoidAgent->new(
       agent => 'Reisegiganten PiPr',
       ssl_opts => {
          verify_hostname => 0,

@@ -5,13 +5,13 @@ use Pipr::WS;
 use Test::More;
 
 my $tests = {
-  'dev.pipr.startsiden.no'  => 'dev',
-  'dev-pipr.startsiden.dev' => 'dev',
-  'kua.pipr.startsiden.no'  => 'kua',
-  'kua-pipr.startsiden.no'  => 'kua',
-  'qa.pipr.startsiden.no'   => 'kua',
-  'qa-pipr.startsiden.no'   => 'kua',
-  'pipr-ws1.startsiden.no'  => 'www',
+  'dev.pipr.example.com'  => 'dev',
+  'dev-pipr.example.dev' => 'dev',
+  'kua.pipr.example.com'  => 'kua',
+  'kua-pipr.example.com'  => 'kua',
+  'qa.pipr.example.com'   => 'kua',
+  'qa-pipr.example.com'   => 'kua',
+  'pipr-ws1.example.com'  => 'www',
   'kua.lol.no'              => 'www',
   'localhost'               => 'www',
 };

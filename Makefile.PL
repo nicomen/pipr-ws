@@ -26,7 +26,6 @@ requires 'Object::Signature' => 0;
 requires 'POSIX' => 0;
 requires 'File::Type' => 0;
 
-# Will be replaced by Startsiden::LWPx::ParanoidAgent
 requires 'Cache::LRU' => 0;
 requires 'LWPx::ParanoidAgent' => 0;
 
