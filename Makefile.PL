@@ -40,6 +40,8 @@ requires 'Modern::Perl' => '1.20150127';
 
 requires 'Template::Toolkit' => 0;
 
+requires 'Mojolicious' => 0;
+
 install_script glob('bin/*');
 
 install_share 'share';
