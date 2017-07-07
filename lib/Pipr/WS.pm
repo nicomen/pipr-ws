@@ -21,6 +21,7 @@ use List::Util;
 use Digest::MD5 qw(md5_hex);
 use File::Spec;
 use File::Path;
+use Mojo::URL;
 use Net::DNS::Resolver;
 use POSIX 'strftime';
 use Cwd;
@@ -360,8 +361,14 @@ sub get_url {
 }
 
 sub _url2file {
-    my ($url) = @_;
+  my ($url) = @_;
 
+  $url = Mojo::URL->new($url);
+  my $q = $url->query->to_hash;
+  $url->query( map { ( $_ => $q->{$_} ) } sort keys %{ $q || {} } );
+  $url = $url->to_string;
+
+warn $url;
   my $md5 = md5_hex(encode_utf8($url));
   my @parts = ( $md5 =~ m/^(.)(..)/ );
   $url =~ s/\?(.*)/md5_hex($1)/e;
@@ -385,6 +392,7 @@ sub expand_macros {
 
     return $str;
 }
+
 
 true;
 
