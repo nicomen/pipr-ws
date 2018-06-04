@@ -292,6 +292,8 @@ sub get_image_from_url {
 sub download_url {
     my ( $url, $local_file, $ignore_cache ) = @_;
 
+    $url =~ s/\?$//;
+
     my $site_config = var 'site_config';
 
     debug "downloading url: $url";
