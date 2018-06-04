@@ -1,19 +1,19 @@
-use Test::More;
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
-use Data::Dumper;
+
+use Test::More;
+use Test::Mojo::Plack;
 use Image::Size;
 use File::Temp qw/tempdir/;
-use JSON;
 
-use_ok 'Pipr::WS';
-
-use Dancer::Test;
+my $t = Test::Mojo::Plack->new('Pipr::WS');
 
 my $test_image_path = "public/images/test.png";
 
 is_deeply(
-  from_json(dancer_response('GET' => "/test/dims/$test_image_path")->content),
+  $t->get_ok("/test/dims/$test_image_path")->tx->res->json,
   { image => { width => 1280, height => 1024, type => 'png' } }, 
   'Check that dimensions are correct'
 );

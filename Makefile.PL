@@ -37,10 +37,10 @@ requires 'File::Share' => 0;
 requires 'File::Slurp' => 0;
 
 requires 'Modern::Perl' => '1.20150127';
-
 requires 'Template::Toolkit' => 0;
-
 requires 'Mojolicious' => 0;
+
+test_requires 'Test::Mojo::Plack' => 0;
 
 install_script glob('bin/*');
 
