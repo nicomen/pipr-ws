@@ -1,10 +1,10 @@
 # configuration file for production environment
 
 # only log warning and error messsages
-# log: "debug"
+log: "warning"
 
 # log message to a file in logs/
-logger: "file"
+logger: "console"
 
 # don't consider warnings critical
 warnings: 0
@@ -16,5 +16,6 @@ show_errors: 0
 route_cache: 1
 
 log_path: /var/log
+log_file: pipr-ws_app.log
 
 allow_local_access: 0
