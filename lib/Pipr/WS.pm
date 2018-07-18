@@ -68,7 +68,7 @@ get '/*/p/**' => sub {
     my $site_config = config->{sites}->{ $site };
     $site_config->{site} = $site;
     if (config->{restrict_targets}) {
-        return do { debug "illegal site: $site";   status 'not_found' } if ! $site_config;
+        return do { error "illegal site: $site";   status 'not_found' } if ! $site_config;
     }
     var 'site_config' => $site_config;
 
@@ -129,7 +129,7 @@ get '/*/-/*/*/*/**' => sub {
    if ($cmd eq 'scale_crop' && $param2 eq 'center') {
        return gen_image($site, 'scale_crop_centered', $params, $url);
    }
-   return do { debug 'illegal command'; status '401'; };
+   return do { error 'illegal command'; status '401'; };
 };
 
 get '/*/*/*/**' => sub {
@@ -143,15 +143,15 @@ get '/*/*/*/**' => sub {
 sub gen_image {
     my ($site, $cmd, $params, $url) = @_;
 
-    return do { debug 'no site set';    status 'not_found' } if !$site;
-    return do { debug 'no command set'; status 'not_found' } if !$cmd;
-    return do { debug 'no params set';  status 'not_found' } if !$params;
-    return do { debug 'no url set';     status 'not_found' } if !$url;
+    return do { error 'no site set';    status 'not_found' } if !$site;
+    return do { error 'no command set'; status 'not_found' } if !$cmd;
+    return do { error 'no params set';  status 'not_found' } if !$params;
+    return do { error 'no url set';     status 'not_found' } if !$url;
 
     my $site_config = config->{sites}->{ $site };
     $site_config->{site} = $site;
     if (config->{restrict_targets}) {
-      return do { debug "illegal site: $site";   status 'not_found' } if ! $site_config;
+      return do { error "illegal site: $site";   status 'not_found' } if ! $site_config;
     }
     var 'site_config' => $site_config;
 
@@ -160,17 +160,18 @@ sub gen_image {
     my ( $width,  $height ) = split /x/, $format;
 
     if ( config->{restrict_targets} ) {
-        debug "checking '$url' with '$params'";
-        return do { debug 'no matching targets'; status 'forbidden' }
+        my $info = "'$url' with '$params'";
+        debug "checking $info";
+        return do { error "no matching targets: $info"; status 'forbidden' }
           if !List::Util::first { $url =~ m{ $_ }gmx; }
             @{ $site_config->{allowed_targets} }, keys %{ $site_config->{shortcuts} || {} };
-        return do { debug 'no matching sizes'; status 'forbidden' }
+        return do { error "no matching sizes: $info"; status 'forbidden' }
           if !List::Util::first { $format =~ m{\A \Q$_\E \z}gmx; }
             @{ $site_config->{sizes} };
     }
 
     my $local_image = get_image_from_url($url);
-    return do { debug "unable to download picture: $url"; status 'not_found' }
+    return do { error "unable to download picture: $url"; status 'not_found' }
       if !$local_image;
 
     my $thumb_cache = File::Spec->catdir(config->{plugins}->{Thumbnail}->{cache}, $site);
@@ -230,7 +231,7 @@ sub gen_image {
             };
         },
         'default' => sub {
-            return do { debug 'illegal command'; status '401'; };
+            return do { error 'illegal command'; status '401'; };
         }
   };
 
@@ -340,7 +341,7 @@ sub download_url {
     debug "fetching from the net... ($url)";
 
     my $res = eval { $ua->get($url, ':content_file' => $local_file); };
-    debug "Error getting $url: (".(request->uri).")" . ($res ? $res->status_line : $@) . Dumper($site_config)
+    error "Error getting $url: (".(request->uri).")" . ($res ? $res->status_line : $@) . Dumper($site_config)
       unless ($res && $res->is_success);
 
     # Try fetching image from HTML page
