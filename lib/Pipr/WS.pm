@@ -371,7 +371,6 @@ sub _url2file {
   $url->query( map { ( $_ => $q->{$_} ) } sort keys %{ $q || {} } );
   $url = $url->to_string;
 
-warn $url;
   my $md5 = md5_hex(encode_utf8($url));
   my @parts = ( $md5 =~ m/^(.)(..)/ );
   $url =~ s/\?(.*)/md5_hex($1)/e;
