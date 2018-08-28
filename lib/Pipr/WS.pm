@@ -374,8 +374,8 @@ sub _url2file {
   my $md5 = md5_hex(encode_utf8($url));
   my @parts = ( $md5 =~ m/^(.)(..)/ );
   $url =~ s/\?(.*)/md5_hex($1)/e;
+  $url =~ s{^https?://}{}; # treat https and http as the same file to save some disk cache
   $url =~ s/[^A-Za-z0-9_\-\.=?,()\[\]\$^:]/_/gmx;
-
   File::Spec->catfile(@parts,$url);
 }
 
