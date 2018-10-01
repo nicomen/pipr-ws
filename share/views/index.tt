@@ -3,8 +3,7 @@
 <p>This service lets you scale/crop and modify images on-the-fly and cached. You can perform actions thru the URL.</p>
 
 <h2>Examples:</h2>
-  [%- extern_url = 'http://csp.picsearch.com/img/S/n/6/2/title_Sn62sq8Ywlafge8SgEWyzw' -%]
-  [%- extern_url = 'http://csp.picsearch.com/img/G/t/6/l/title_Gt6lWCcSuJvaatlRgDSv3Q' -%]
+  [%- extern_url = 'public/images/test.jpg' -%]
   [%- ex_uri = request.uri_for('/demo/resized/100x100/' _ extern_url); -%]
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/resized/300x/' _ extern_url); -%]
@@ -19,8 +18,8 @@
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/cropped/100x100,100x100/' _ extern_url); -%]
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
-  [%- xs = (768 / 10) -%]
-  [%- ys = (432 / 10) -%]
+  [%- xs = (760 / 10) -%]
+  [%- ys = (550 / 10) -%]
   <div style="margin: auto; width: [%- xs * 10 + 10 * 2 -%]px;">
   [%- FOREACH y IN [0 .. 9] -%]
     [%- yo = ys * y -%]
@@ -33,4 +32,6 @@
   </div>
 <p style="clear: both">Below is the current config in use with allowed targets and sizes.</p>
 [% USE Dumper %]
-[% Dumper.dump_html( sites ) %]
+<pre>
+[% Dumper.dump( sites ) %]
+</pre>

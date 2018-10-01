@@ -41,8 +41,8 @@ restrict_targets: 1
 
 sites:
   demo:
-     sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '76.8x43.2', '300x50', '169x169' ]
-     allowed_targets: [ 'http://csp.picsearch.com' ]
+     sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '76x55', '300x50', '169x169' ]
+     allowed_targets: [ 'public/images/test' ]
   rg:
      sizes: [ '110x90', '230x200', '711x470', '93x70', 'x470', '980x', '966x' ]
      allowed_targets: [ 'http' ]
