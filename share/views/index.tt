@@ -18,6 +18,10 @@
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
   [%- ex_uri = request.uri_for('/demo/cropped/100x100,100x100/' _ extern_url); -%]
   <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
+  [%- ex_uri = request.uri_for('/demo/p/' _ extern_url); -%]
+  <p style="text-align: center;"><a href="[% ex_uri %]">[% ex_uri %]</a><br><img src="[%- ex_uri -%]"></p>
+
+  <p style="text-align: center;">Mosaic, hover each image to see URL used</p>
   [%- xs = (760 / 10) -%]
   [%- ys = (550 / 10) -%]
   <div style="margin: auto; width: [%- xs * 10 + 10 * 2 -%]px;">
@@ -30,6 +34,8 @@
     [%- END -%]
   [%- END -%]
   </div>
+
+
 <p style="clear: both">Below is the current config in use with allowed targets and sizes.</p>
 [% USE Dumper %]
 <pre>
