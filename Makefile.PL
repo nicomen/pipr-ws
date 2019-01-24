@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
 name 'Pipr-WS';
-version '18.20180726-01';
+version '18.20190124-01';
 # These override things fetched by 'all_from' below.
 # They must come *before* the call to 'all_from'.
 perl_version '5.010001';
