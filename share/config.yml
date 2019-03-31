@@ -31,11 +31,11 @@ timeout: 20
 
 plugins:
     Thumbnail:
-        cache: /tmp/pipr/thumb_cache
+        cache: /var/cache/pipr/thumb_cache
         compression: 7
         quality: 100
 
-cache_dir: '/tmp/pipr/cache'
+cache_dir: '/var/cache/pipr/cache'
 
 restrict_targets: 1
 
