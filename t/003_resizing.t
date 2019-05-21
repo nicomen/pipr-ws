@@ -35,6 +35,11 @@ my $test_image_path_gz = "public$test_image_url";
 $t->get_ok($test_image_url_gz)->status_is(200, 'test image exists');
 $t->get_ok("/test/resized/30x30/$test_image_path_gz")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path_gz");
 
+my $test_image_url_gz2 = '/images/hotel_test_gzipped';
+my $test_image_path_gz2 = "public$test_image_url";
+$t->get_ok($test_image_url_gz2)->status_is(200, 'test image exists');
+$t->get_ok("/test/resized/30x30/$test_image_path_gz")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path_gz");
+
 my $empty_image_path = "public/images/empty.jpg";
 $t->get_ok("/test/resized/30x30/$empty_image_path")->status_is(400, "response status is 400 for /test/resized/30x30/$empty_image_path");
 
