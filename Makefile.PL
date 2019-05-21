@@ -18,9 +18,7 @@ requires 'Crypt::SSLeay'; # SSL Support
 requires 'Dancer' => 1.3202;
 requires 'GD' => 0;
 requires 'IO::Socket::SSL' => 0;
-requires 'IO::Compress' => 0;
-requires 'IO::File' => 0;
-requires 'IO::Zlib' => 0;
+requires 'PerlIO::gzip';
 requires 'JSON::Any' => 0;
 requires 'List::Util' => 0;
 requires 'Object::Signature' => 0;

@@ -12,12 +12,12 @@ use Dancer::MIME;
 use Dancer::Plugin;
 use File::Path;
 use GD::Image;
-use IO::File;
-use IO::Zlib;
 use JSON::Any;
 use List::Util qw( min max );
 use Object::Signature;
 use POSIX 'strftime';
+use PerlIO::gzip;
+use Path::Tiny;
 
 =head1 VERSION
 
@@ -203,26 +203,7 @@ sub thumbnail {
             return scalar <FH>;
         }
     }
-
-    # Do not lose colors on images
-    GD::Image->trueColor(1);
-
-    my $fh;
-    if (File::Type->new->checktype_filename($file) =~ /gzip/) {
-      $fh = IO::Zlib->new($file) or do {
-          error "can't open gzipped '$file'";
-          status 500;
-          return '500 Internal Server Error';
-      };
-    } else {
-      $fh = IO::File->new($file) or do {
-          error "can't open '$file'";
-          status 500;
-          return '500 Internal Server Error';
-      };
-    };
-
-    my $src_img = GD::Image->new($fh) or do {
+    my $src_img = GD::Image->new(Path::Tiny->new($file)->slurp({ binmode => ':gzip(autopop)' })) or do {
         error "can't load image '$file'";
         status 500;
         return '500 Internal Server Error';

@@ -42,14 +42,14 @@ restrict_targets: 1
 sites:
   demo:
      sizes: [ '100x', '100x100', '200x', '300x', '144x82', '50x50', '76x55', '300x50', '169x169' ]
-     allowed_targets: [ 'public/images/test' ]
+     allowed_targets: [ 'public/images' ]
   rg:
      sizes: [ '110x90', '230x200', '711x470', '93x70', 'x470', '980x', '980x400', '966x' ]
      allowed_targets: [ 'http' ]
      replacements: [ ]
   test:
      sizes: [ '30x30', '100x30', '30x', 'x30' ]
-     allowed_targets: [ 'public/images/empty.jpg', 'public/images/test.png', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
+     allowed_targets: [ 'public/images/empty.jpg', 'public/images/test', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
     
 log_path: .
 log_file: pipr-ws_app.log
