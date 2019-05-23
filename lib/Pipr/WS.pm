@@ -23,6 +23,7 @@ use File::Spec;
 use File::Path;
 use Mojo::URL;
 use Net::DNS::Resolver;
+use PerlIO::gzip;
 use POSIX 'strftime';
 use Cwd;
 use URI;
@@ -89,7 +90,7 @@ get '/*/p/**' => sub {
         return;
     }
 
-    open my $fh, '<:raw', $file or do {
+    open my $fh, '<:gzip(autopop)', $file or do {
         error "can't read cache file '$file'";
         status 500;
         return '500 Internal Server Error';
@@ -97,11 +98,17 @@ get '/*/p/**' => sub {
 
     my $ft = File::Type->new();
 
+    undef $/; # slurp
     # send useful headers & content
-    content_type $ft->mime_type($file);
+    content_type $ft->mime_type(<$fh>);
+    close $fh;
     header('Cache-Control' => 'public, max-age=86400');
     header 'Last-Modified' => $lmod;
-    undef $/; # slurp
+    open $fh, '<:gzip(autopop)', $file or do {
+        error "can't read cache file '$file'";
+        status 500;
+        return '500 Internal Server Error';
+    };
     return scalar <$fh>;
 
 };
