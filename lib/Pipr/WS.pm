@@ -136,7 +136,7 @@ get '/*/-/*/*/*/**' => sub {
    if ($cmd eq 'scale_crop' && $param2 eq 'center') {
        return gen_image($site, 'scale_crop_centered', $params, $url);
    }
-   return do { error 'illegal command'; status '401'; };
+   return do { error "illegal command: '$cmd'"; status '401'; };
 };
 
 get '/*/*/*/**' => sub {
