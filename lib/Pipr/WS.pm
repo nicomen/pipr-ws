@@ -83,6 +83,10 @@ get '/*/p/**' => sub {
 
     # prepare Last-Modified header
     my $lmod = strftime '%a, %d %b %Y %H:%M:%S GMT', gmtime $stat[9];
+    my $etag = sprintf '%x-%x-%x', ($stat[1], $stat[9], $stat[7]);
+    # if the file was modified less than one second before the request
+    # it may be modified in a near future, so we return a weak etag
+    $etag = "W/$etag" if $stat[9] == time - 1;
 
     # processing conditional GET
     if ( ( header('If-Modified-Since') || '' ) eq $lmod ) {
@@ -103,7 +107,8 @@ get '/*/p/**' => sub {
     content_type $ft->mime_type(<$fh>);
     close $fh;
     header('Cache-Control' => 'public, max-age=86400');
-    header 'Last-Modified' => $lmod;
+    header('ETag' => $etag);
+    header('Last-Modified' => $lmod);
     open $fh, '<:gzip(autopop)', $file or do {
         error "can't read cache file '$file'";
         status 500;
