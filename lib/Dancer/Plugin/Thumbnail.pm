@@ -209,19 +209,23 @@ sub thumbnail {
             return scalar <FH>;
         }
     }
-    my $path = Path::Tiny->new($file);
-    my $fh = $path->filehandle;
-    my $magic;
+
     my $src_img;
-    if (read($fh,$magic,4)) {
-      if (my $type = GD::Image::_image_type($magic)) {
-        seek($fh,0,0);
-        my $method = "_newFrom${type}";
-        $src_img = GD::Image->$method(\$fh);
-      } else {
-        $src_img = GD::Image->new($path->slurp({ binmode => ':gzip(autopop)' }));
+
+    eval {
+      my $path = Path::Tiny->new($file);
+      my $fh = $path->filehandle;
+      my $magic;
+      if (read($fh,$magic,4)) {
+        if (my $type = GD::Image::_image_type($magic)) {
+          seek($fh,0,0);
+          my $method = "_newFrom${type}";
+          $src_img = GD::Image->$method(\$fh);
+        } else {
+          $src_img = GD::Image->new($path->slurp({ binmode => ':gzip(autopop)' }));
+        }
       }
-    }
+    };
 
     if (!$src_img) {
         error "can't load image '$file'";
