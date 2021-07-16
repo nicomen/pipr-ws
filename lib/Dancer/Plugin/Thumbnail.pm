@@ -209,12 +209,25 @@ sub thumbnail {
             return scalar <FH>;
         }
     }
-    my $src_img = GD::Image->new(Path::Tiny->new($file)->slurp({ binmode => ':gzip(autopop)' })) or do {
+    my $path = Path::Tiny->new($file);
+    my $fh = $path->filehandle;
+    my $magic;
+    my $src_img;
+    if (read($fh,$magic,4)) {
+      if (my $type = GD::Image::_image_type($magic)) {
+        seek($fh,0,0);
+        my $method = "_newFrom${type}";
+        $src_img = GD::Image->$method(\$fh);
+      } else {
+        $src_img = GD::Image->new($path->slurp({ binmode => ':gzip(autopop)' }));
+      }
+    }
+
+    if (!$src_img) {
         error "can't load image '$file'";
         status 500;
         return '500 Internal Server Error';
     };
-
     # original sizes
     my ( $src_w, $src_h ) = $src_img->getBounds;
 
