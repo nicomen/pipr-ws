@@ -252,7 +252,7 @@ sub gen_image {
       die $body if $body =~ /Internal Server Error/;
       return $body;
   } or do {
-      error 'Unable to load image: ' . $@;
+      error 'Unable to load image: ' . substr($@,0,2000);
       status '400';
       return;
   };
