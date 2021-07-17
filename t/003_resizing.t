@@ -80,6 +80,11 @@ Pipr::WS->config->{'sites'}->{'test4'} = {
 
 $t->get_ok("/test4/resized/30x30/https://www.google.no/images/branding/googleg/1x/googleg_standard_color_128dp.png")->status_is(200, "SSL works");
 
+use Test::LeakTrace;
+no_leaks_ok {
+  $t->get_ok("/test4/resized/30x30/https://www.google.no/images/branding/googleg/1x/googleg_standard_color_128dp.png")->status_is(200, "SSL works");
+};
+
 # TODO: patterns without / has to be checked as if they had a slash (against host), or else: https://foo.com matches https://foo.com@someother.server.com
 
 #map { warn $_->{message} if $_->{level} eq 'error'; } @{ &read_logs };
