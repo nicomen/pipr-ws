@@ -190,6 +190,7 @@ sub thumbnail {
 
         # try to get cached version
         if ( -f $cache_file ) {
+            return $cache_file;
             open FH, '<:raw', $cache_file or do {
                 error "can't read cache file '$cache_file'";
                 status 500;
@@ -355,6 +356,8 @@ sub thumbnail {
                 return '500 Internal Server Error';
             };
         }
+        path($cache_file)->spew_raw($dst_bytes);
+        return $cache_file;
         open FH, '>:raw', $cache_file or do {
             error "can't create cache file '$cache_file'";
             status 500;

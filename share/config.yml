@@ -53,7 +53,7 @@ sites:
     
 log_path: .
 log_file: pipr-ws_app.log
-logger_format: %U [%P] %L @%D> %m in %f l. %l
+logger_format: '%U [%P] %L @%D> %m in %f l. %l'
 
 allow_local_access: 1
 
