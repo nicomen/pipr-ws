@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More;
 
-use Test::Mojo::Plack;
+use Test::Mojo;
 
-my $t = Test::Mojo::Plack->new('Pipr::WS');
+my $t = Test::Mojo->new('Pipr::WS');
 
 $t->get_ok('/')->status_is(200, 'response status is 200 for /');
 

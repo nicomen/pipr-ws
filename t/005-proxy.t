@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Mojo::Plack;
+use Test::Mojo;
 use Test::LongString;
 use Data::Dumper;
 use Image::Size;
@@ -14,7 +14,7 @@ use File::Slurp;
 
 use_ok 'Pipr::WS';
 
-my $t = Test::Mojo::Plack->new('Pipr::WS');
+my $t = Test::Mojo->new('Pipr::WS');
 
 my $test_image_path = "public/images/test.png";
 

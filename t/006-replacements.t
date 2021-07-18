@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Mojo::Plack;
+use Test::Mojo;
 use Pipr::WS;
 
 use Data::Dumper;
@@ -24,7 +24,7 @@ Pipr::WS->config->{'sites'}->{'test5'} = {
     replacements => [ [ 'test-pattern*', 'https://www.google.no' ] ]
 };
 
-my $t = Test::Mojo::Plack->new('Pipr::WS');
+my $t = Test::Mojo->new('Pipr::WS');
 $t->get_ok("/test5/resized/30x30/test-pattern/images/branding/googleg/1x/googleg_standard_color_128dp.png")->status_is(200, "replacements works");
 
 done_testing;

@@ -9,7 +9,7 @@ use Data::Dumper;
 use Image::Size;
 use File::Temp qw/tempdir/;
 
-use Test::Mojo::Plack;
+use Test::Mojo;
 use Pipr::WS;
 
 my %test_config = ();
@@ -20,7 +20,7 @@ my $thumb_cache = tempdir( 'pipr-thumb_cacheXXXX', CLEANUP => 1, );
 Pipr::WS->config->{'cache_dir'} = $cache;
 Pipr::WS->config->{'plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
 
-my $t = Test::Mojo::Plack->new('Pipr::WS');
+my $t = Test::Mojo->new('Pipr::WS');
 $t->get_ok('/foo')->status_is(404, 'response status is 404 for /foo');
 
 my $test_image_url = '/images/test.png';

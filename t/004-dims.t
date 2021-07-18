@@ -4,11 +4,11 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Mojo::Plack;
+use Test::Mojo;
 use Image::Size;
 use File::Temp qw/tempdir/;
 
-my $t = Test::Mojo::Plack->new('Pipr::WS');
+my $t = Test::Mojo->new('Pipr::WS');
 
 my $test_image_path = "public/images/test.png";
 
