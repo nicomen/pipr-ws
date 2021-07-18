@@ -195,18 +195,15 @@ sub thumbnail {
                 status 500;
                 return '500 Internal Server Error';
             };
-
-            # skip meta info
-            local $/ = "\n\n";
-            <FH>;
-            undef $/;
+            close FH;
 
             # send useful headers & content
             content_type $type->type;
             header('Last-Modified' => $lmod);
             header('ETag' => $etag);
             header('Cache-Control' => 'public, max-age=86400');
-            return scalar <FH>;
+            debug "Returning cached version: " . $type->type;
+            return { file => $cache_file->stringify, type => $type->type };
         }
     }
 
@@ -364,28 +361,15 @@ sub thumbnail {
             return '500 Internal Server Error';
         };
 
-        # store serialized meta information (for future using)
-        print FH JSON::Any->to_json(
-            {
-                args        => \@_,
-                compression => $compression,
-                conf        => $conf,
-                format      => $fmt,
-                lmod        => $lmod,
-                mtime       => $stat[9],
-                quality     => $quality,
-                type        => $type->type,
-            }
-        ) . "\n\n";
-
         # store actual target image
         print FH $dst_bytes;
     }
-
+    close(FH);
     # send useful headers & content
     content_type $type->type;
     header 'Last-Modified' => $lmod;
-    return $dst_bytes;
+    debug "Returning generated version: " . $cache_file->stringify;
+    return { file => $cache_file->stringify, type => $type->type };
 }
 
 register thumbnail => \&thumbnail;

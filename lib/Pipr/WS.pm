@@ -104,18 +104,14 @@ get '/*/p/**' => sub {
 
     undef $/; # slurp
     # send useful headers & content
-    content_type $ft->mime_type(<$fh>);
+    my $type = $ft->mime_type(<$fh>);
     close $fh;
     header('Cache-Control' => 'public, max-age=86400');
     header('ETag' => $etag);
     header('Last-Modified' => $lmod);
-    open $fh, '<:gzip(autopop)', $file or do {
-        error "can't read cache file '$file'";
-        status 500;
-        return '500 Internal Server Error';
-    };
-    return scalar <$fh>;
+    close $fh;
 
+  return send_file($file, system_path => 1, content_type => $type);
 };
 
 get '/*/dims/**' => sub {
@@ -247,15 +243,18 @@ sub gen_image {
         }
   };
 
+  my $res;
   eval {
-      my $body = $switch->{$cmd} ? $switch->{$cmd}->($local_image, $width, $height, $x, $y, $thumb_cache) : $switch->{'default'}->();
-      die $body if $body =~ /Internal Server Error/;
-      return $body;
+    $res = $switch->{$cmd} ? $switch->{$cmd}->($local_image, $width, $height, $x, $y, $thumb_cache) : $switch->{'default'}->();
+    die $res if $res =~ /Internal Server Error/;
+    1;
   } or do {
       error 'Unable to load image: ' . substr($@,0,2000);
       status '400';
       return;
   };
+  debug "Sending file: $res->{file} ($res->{type})";
+  return send_file($res->{file}, system_path => 1, content_type => $res->{type});
 };
 
 sub get_image_from_url {
