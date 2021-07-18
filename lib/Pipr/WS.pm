@@ -57,7 +57,8 @@ $ua->whitelisted_hosts( @{ config->{whitelisted_hosts} } );
 $ua->timeout(config->{timeout});
 
 get '/' => sub {
-    template 'index' => { sites => config->{sites} } if config->{environment} ne 'production';
+    return template 'index' => { sites => config->{sites} } if config->{environment} ne 'production';
+    return 'Picture Provider';
 };
 
 # Proxy images
