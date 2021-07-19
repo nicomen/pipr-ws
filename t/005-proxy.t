@@ -16,6 +16,8 @@ use_ok 'Pipr::WS';
 
 my $t = Test::Mojo->new('Pipr::WS');
 
+$t->app->config->{'allow_local_access'} = 1;
+
 my $test_image_path = "public/images/test.png";
 
 my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;

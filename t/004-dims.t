@@ -10,6 +10,8 @@ use File::Temp qw/tempdir/;
 
 my $t = Test::Mojo->new('Pipr::WS');
 
+$t->app->config->{'allow_local_access'} = 1;
+
 my $test_image_path = "public/images/test.png";
 
 is_deeply(

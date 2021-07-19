@@ -1,5 +1,8 @@
 package Dancer::Plugin::Thumbnail;
 
+use strict;
+use warnings;
+
 =head1 NAME
 
 Dancer::Plugin::Thumbnail - Easy thumbnails creating with Dancer and GD
@@ -7,9 +10,6 @@ Dancer::Plugin::Thumbnail - Easy thumbnails creating with Dancer and GD
 =cut
 
 use feature 'switch';
-use Dancer ':syntax';
-use Dancer::MIME;
-use Dancer::Plugin;
 use File::Path;
 use GD::Image;
 use JSON::Any;
@@ -105,11 +105,14 @@ Defaults for these options can be specified in config.yml:
 
 =cut
 
-sub thumbnail {
-    my ( $file, $opers, $opts ) = @_;
+sub status {}
 
+sub thumbnail {
+    my ( $c, $file, $opers, $opts ) = @_;
+
+$DB::single = 1;
     # load settings
-    my $conf = plugin_setting;
+    my $conf = {};
 
     # create absolute path
     unless ($file) {
@@ -118,7 +121,7 @@ sub thumbnail {
     }
 
     # create an absolute path
-    $file = path config->{public}, $file
+    $file = $file
       unless $file =~ m{^/};
 
     # check for file existance and readabilty
@@ -133,6 +136,7 @@ sub thumbnail {
         return '404 Not Found';
     };
 
+    my $headers = $opts->{headers};
     # prepare Last-Modified header
     my $lmod = strftime '%a, %d %b %Y %H:%M:%S GMT', gmtime $stat[9];
     my $etag = sprintf '%x-%x-%x', ($stat[1], $stat[9], $stat[7]);
@@ -141,16 +145,12 @@ sub thumbnail {
     $etag = "W/$etag" if $stat[9] == time - 1;
 
     # processing conditional GET
-    if ( ( header('If-Modified-Since') || '' ) eq $lmod ) {
-        status 304;
-        return;
+    if ( ( $headers->header('If-Modified-Since') || '' ) eq $lmod ) {
+        return { file => $file, last_modified => $lmod, etag => $etag, status => 304 };
     }
 
     # target format & content-type
-    my $mime = Dancer::MIME->instance;
     my $fmt = $opts->{format} || $conf->{format} || 'auto';
-    my $type = $fmt eq 'auto' ? $mime->for_file($file) : $mime->for_name($fmt);
-    ($fmt) = $type->extensions if $fmt eq 'auto';
 
     # target options
     my $compression = $fmt eq 'png' ? $opts->{compression} // $conf->{compression} // -1 : 0;
@@ -169,13 +169,13 @@ sub thumbnail {
     if ($cache_dir) {
 
         # check for an absolute path of cache directory
-        $cache_dir = path config->{appdir}, $cache_dir
+        $cache_dir = $cache_dir
           unless $cache_dir =~ m{^/};
 
         # check for existance of cache directory
         unless ( -d $cache_dir && -w _ ) {
-            warning "no cache directory at '$cache_dir'";
-            File::Path::make_path( $cache_dir ) or undef $cache_dir;
+            $c->log->warn("no cache directory at '$cache_dir'");
+            File::Path::make_path( $cache_dir ) or $c->log->error("Unable to create '$cache_dir'");
         }
     }
 
@@ -190,21 +190,7 @@ sub thumbnail {
 
         # try to get cached version
         if ( -f $cache_file ) {
-            return $cache_file;
-            open FH, '<:raw', $cache_file or do {
-                error "can't read cache file '$cache_file'";
-                status 500;
-                return '500 Internal Server Error';
-            };
-            close FH;
-
-            # send useful headers & content
-            content_type $type->type;
-            header('Last-Modified' => $lmod);
-            header('ETag' => $etag);
-            header('Cache-Control' => 'public, max-age=86400');
-            debug "Returning cached version: " . $type->type;
-            return { file => $cache_file->stringify, type => $type->type };
+            return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag };
         }
     }
 
@@ -226,7 +212,7 @@ sub thumbnail {
     };
 
     if (!$src_img) {
-        error "can't load image '$file'";
+        $c->log->error("can't load image '$file'");
         status 500;
         return '500 Internal Server Error';
     };
@@ -246,14 +232,13 @@ sub thumbnail {
         my $dst_w = $args->{w} || $args->{width};
         my $dst_h = $args->{h} || $args->{height};
 
-        given ($op) {
-            when ('resize') {
+        if ($op eq 'resize') {
                 my $scale_mode = $args->{s} || $args->{scale} || 'max';
                 do {
-                    error "unknown scale mode '$scale_mode'";
+                    $c->log->error("unknown scale mode '$scale_mode'");
                     status 500;
                     return '500 Internal Server Error';
-                } unless $scale_mode ~~ [ 'max', 'min', 'force' ];
+                } unless grep { $_ eq $scale_mode } ('max', 'min', 'force');
 
                 $scale_mode = 'max' if !( $dst_h && $dst_w );
 
@@ -274,29 +259,28 @@ sub thumbnail {
 
                 # create new image
                 $dst_img = GD::Image->new( $dst_w, $dst_h, 1 ) or do {
-                    error "can't create image for '$file'";
+                    $c->log->error("can't create image for '$file'");
                     status 500;
                     return '500 Internal Server Error';
                 };
 
                 # resize!
                 $dst_img->copyResampled( $src_img, 0, 0, 0, 0, $dst_w, $dst_h, $src_w, $src_h );
-            }
-            when ('crop') {
+        } elsif ($op eq 'crop') {
                 $dst_w = min $src_w, $dst_w || $src_w;
                 $dst_h = min $src_h, $dst_h || $src_h;
 
                 # anchors
                 my ( $h_anchor, $v_anchor ) = ( $args->{a} || $args->{anchors} || 'cm' ) =~ /^([lcr])([tmb])$/
                   or do {
-                    error "invalid anchors: '$args->{ anchors }'";
+                    $c->log->error("invalid anchors: '$args->{ anchors }'");
                     status 500;
                     return '500 Internal Server Error';
                   };
 
                 # create new image
                 $dst_img = GD::Image->new( $dst_w, $dst_h, 1 ) or do {
-                    error "can't create image for '$file'";
+                    $c->log->error("can't create image for '$file'");
                     status 500;
                     return '500 Internal Server Error';
                 };
@@ -314,34 +298,30 @@ sub thumbnail {
                         :                    $src_h - $dst_h ),
                     $dst_w, $dst_h
                 );
-            }
-            default {
-                error "unknown operation '$op'";
-                status 500;
-                return '500 Internal Server Error';
-            }
-        }
+       } else {
+           $c->log->error("unknown operation '$op'");
+           status 500;
+           return '500 Internal Server Error';
+       }
 
         # keep destination image as original
         ( $src_img, $src_w, $src_h ) = ( $dst_img, $dst_w, $dst_h );
     }
 
     # generate image
-    given ($fmt) {
-        when ('gif') {
-            $dst_bytes = $dst_img->$_;
-        }
-        when ('jpeg') {
-            $dst_bytes = $quality ? $dst_img->$_($quality) : $dst_img->$_;
-        }
-        when ('png') {
-            $dst_bytes = $dst_img->$_($compression);
-        }
-        default {
-            error "unknown format '$_'";
-            status 500;
-            return '500 Internal Server Error';
-        }
+    if ($fmt eq 'gif') {
+      $dst_bytes = $dst_img->$fmt;
+    }
+    elsif ($fmt eq 'jpeg') {
+      $dst_bytes = $quality ? $dst_img->$fmt($quality) : $dst_img->$fmt;
+    }
+    elsif ($fmt eq 'png') {
+      $dst_bytes = $dst_img->$fmt($compression);
+    }
+    else {
+      $c->log->error("unknown format '$fmt'");
+      status 500;
+      return '500 Internal Server Error';
     }
 
     # store to cache (if requested)
@@ -351,31 +331,17 @@ sub thumbnail {
         for (@cache_hier) {
             next if -d ( $cache_dir = path $cache_dir, $_ );
             mkdir $cache_dir or do {
-                error "can't create cache directory '$cache_dir'";
+                $c->log->error("can't create cache directory '$cache_dir'");
                 status 500;
                 return '500 Internal Server Error';
             };
         }
         path($cache_file)->spew_raw($dst_bytes);
-        return $cache_file;
-        open FH, '>:raw', $cache_file or do {
-            error "can't create cache file '$cache_file'";
-            status 500;
-            return '500 Internal Server Error';
-        };
-
-        # store actual target image
-        print FH $dst_bytes;
     }
-    close(FH);
+    $c->log->debug("Returning generated version: " . $cache_file->stringify);
     # send useful headers & content
-    content_type $type->type;
-    header 'Last-Modified' => $lmod;
-    debug "Returning generated version: " . $cache_file->stringify;
-    return { file => $cache_file->stringify, type => $type->type };
+    return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag };
 }
-
-register thumbnail => \&thumbnail;
 
 =head2 crop ( $file, \%arguments, \%options )
 
@@ -405,10 +371,6 @@ First character can be one of 'l/c/r' (left/right/center), and second - 't/m/b'
 
 =cut
 
-register crop => sub {
-    thumbnail shift, [ crop => shift ], @_;
-};
-
 =head2 resize ( $file, \%arguments, \%options )
 
 This is shortcut and fully equivalent to call:
@@ -437,12 +399,6 @@ Argument can be 'min' or 'max' (which is default).
 =back
 
 =cut
-
-register resize => sub {
-    thumbnail shift, [ resize => shift ], @_;
-};
-
-register_plugin;
 
 =head1 AUTHOR
 

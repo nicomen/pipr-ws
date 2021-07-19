@@ -17,10 +17,10 @@ my %test_config = ();
 my $cache       = tempdir( 'pipr-cacheXXXX',       CLEANUP => 1, );
 my $thumb_cache = tempdir( 'pipr-thumb_cacheXXXX', CLEANUP => 1, );
 
-Pipr::WS->config->{'cache_dir'} = $cache;
-Pipr::WS->config->{'plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
-
 my $t = Test::Mojo->new('Pipr::WS');
+$t->app->config->{'allow_local_access'} = 1;
+$t->app->config->{'cache_dir'} = $cache;
+$t->app->config->{'plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
 $t->get_ok('/foo')->status_is(404, 'response status is 404 for /foo');
 
 my $test_image_url = '/images/test.png';
@@ -59,31 +59,26 @@ is_deeply [imgsize(\$image)], [38,30,'JPG'], 'Correct resized width/height ((38)
 
 $t->get_ok("/test/resized/30x30/https://www.google.com/images/srpr/logo3w.png")->status_is(403, "not able to fetch illegal images");
 
-Pipr::WS->config->{'sites'}->{'test2'} = {
+$t->app->config->{'sites'}->{'test2'} = {
   sizes => [ '30x30' ],
   allowed_targets => [ 'https://www.google.com/' ],
 };
 
 $t->get_ok("/test2/resized/30x30/https://www.google.com/images/srpr/logo3w.png")->status_is(200, "SSL works");
 
-Pipr::WS->config->{'sites'}->{'test3'} = {
+$t->app->config->{'sites'}->{'test3'} = {
   sizes => [ '30x30' ],
   allowed_targets => [ 'https://abcnyheter.drpublish.aptoma.no/' ],
 };
 
 $t->get_ok("/test3/resized/30x30/https://abcnyheter.drpublish.aptoma.no/out/images/article//2014/06/16/194406041/1/stor/VI__15__Bombingen_av_Victoria_terrasse.jpg")->status_is(200, "SSL works");
 
-Pipr::WS->config->{'sites'}->{'test4'} = {
+$t->app->config->{'sites'}->{'test4'} = {
   sizes => [ '30x30' ],
   allowed_targets => [ 'https://www.google.no' ],
 };
 
 $t->get_ok("/test4/resized/30x30/https://www.google.no/images/branding/googleg/1x/googleg_standard_color_128dp.png")->status_is(200, "SSL works");
-
-use Test::LeakTrace;
-no_leaks_ok {
-  $t->get_ok("/test4/resized/30x30/https://www.google.no/images/branding/googleg/1x/googleg_standard_color_128dp.png")->status_is(200, "SSL works");
-};
 
 # TODO: patterns without / has to be checked as if they had a slash (against host), or else: https://foo.com matches https://foo.com@someother.server.com
 
