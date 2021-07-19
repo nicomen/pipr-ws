@@ -8,9 +8,8 @@ use Test::Mojo;
 use Test::LongString;
 use Data::Dumper;
 use Image::Size;
-use File::Temp qw/tempdir/;
 
-use File::Slurp;
+use Path::Tiny qw/path/;
 
 use_ok 'Pipr::WS';
 
@@ -24,7 +23,7 @@ my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;
 
 is($res->headers->header('Content-Type'), 'image/x-png', 'Correct MIME-Type');
 my $proxied_file = $res->body;
-my $orig_file = File::Slurp::read_file("share/$test_image_path", binmode => ':raw');
+my $orig_file = path("share/$test_image_path")->slurp_raw;
 is_string($proxied_file, $orig_file, 'Files are identical');
 
 done_testing;
