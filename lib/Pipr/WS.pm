@@ -34,7 +34,7 @@ sub startup {
   $self->plugin('YamlConfig' => { file => path($share_dir, 'config.yml'), class => 'YAML::XS' });
 
   $self->renderer->paths(["$share_dir/views"]);
-  $self->plugin('rg_tt_renderer' => { template_options => {
+  $self->plugin('tt_renderer' => { template_options => {
       ENCODING => 'UTF-8',
     }
   });

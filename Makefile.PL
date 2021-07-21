@@ -38,6 +38,7 @@ requires 'Modern::Perl' => '1.20150127';
 requires 'Template::Toolkit' => 0;
 requires 'Mojolicious' => 0;
 requires 'Mojolicious::Plugin::YamlConfig' => 0;
+requires 'Mojolicious::Plugin::TtRenderer' => 0;
 
 test_requires 'Test::Mojo::Plack' => 0.13;
 test_requires 'Test::Simple' => 0;
