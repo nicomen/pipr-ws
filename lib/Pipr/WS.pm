@@ -50,6 +50,11 @@ sub startup {
     die unless $site_config = $self->config->{sites}->{ $site };
     return $c->stash->{site_config} = $site_config;
   });
+  $self->helper('allow_local_access' => sub {
+    my $c = shift;
+    $c->app->mode ne 'production' && $c->config->{allow_local_access};
+  });
+
 
   $self->helper('render_file' => sub {
   my $c        = shift;
@@ -140,7 +145,7 @@ sub setup_routes {
 
   $r->get('/' => sub {
     my ($c) = shift;
-    return $c->render( 'index', sites => $self->config->{sites}) if ($self->config->{environment} // '') ne 'production';
+    return $c->render( 'index', sites => $c->config->{sites}) if ($c->app->mode ne 'production');
     return $c->render( text => 'Picture Provider/Processor');
   });
 
@@ -405,7 +410,7 @@ sub download_url {
     $url =~ s{^(https?):/(?:[^/])}{$1/}mx;
 
     if ($url !~ m{ \A (https?|ftp)}gmx) {
-        if ( $c->app->config->{allow_local_access} ) {
+        if ( $c->allow_local_access ) {
             my $local_file = path( $c->share_dir, $url )->stringify;
             $c->app->log->debug("locally accessing $local_file");
             return $local_file if $local_file;
