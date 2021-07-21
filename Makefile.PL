@@ -37,6 +37,7 @@ requires 'File::Share' => 0;
 requires 'Modern::Perl' => '1.20150127';
 requires 'Template::Toolkit' => 0;
 requires 'Mojolicious' => 0;
+requires 'Mojolicious::Plugin::YAMLConfig' => 0;
 
 test_requires 'Test::Mojo::Plack' => 0.13;
 test_requires 'Test::Simple' => 0;
