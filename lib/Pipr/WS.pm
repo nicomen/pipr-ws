@@ -59,31 +59,31 @@ sub startup {
 
 
   $self->helper('render_file' => sub {
-  my $c        = shift;
-  my %args     = @_;
-  my $filepath = $args{filepath};
+    my $c        = shift;
+    my %args     = @_;
+    my $filepath = $args{filepath};
 
-  return $c->rendered($args{status}) if ($args{status} // '') eq '304';
+    return $c->rendered($args{status}) if ($args{status} // '') eq '304';
 
-  unless ( -f $filepath && -r $filepath ) {
+    unless ( -f $filepath && -r $filepath ) {
       $c->app->log->error("Cannot read file [$filepath]. error [$!]");
       return;
-  }
+    }
 
-  my $filename     = $args{filename}     || fileparse($filepath);
-  my $status       = $args{status}       || 200;
-  my $content_type = $args{content_type} || 200;
+    my $filename     = $args{filename}     || fileparse($filepath);
+    my $status       = $args{status}       || 200;
+    my $content_type = $args{content_type} || 'image/jpeg';
 
-  my $headers = $args{headers} // Mojo::Headers->new();
-  $headers->add( 'Content-Type', $content_type );
+    my $headers = $args{headers} // Mojo::Headers->new();
+    $headers->add( 'Content-Type', $content_type );
 
-  # Asset
-  my $asset = Mojo::Asset::File->new( path => $filepath );
+    # Asset
+    my $asset = Mojo::Asset::File->new( path => $filepath );
 
-  # Range
-  # Partially based on Mojolicious::Static
-  my $size = ( stat $filepath )[7];
-  if ( my $range = $c->req->headers->range ) {
+    # Range
+    # Partially based on Mojolicious::Static
+    my $size = ( stat $filepath )[7];
+    if ( my $range = $c->req->headers->range ) {
 
       my $start = 0;
       my $end = $size - 1 >= 0 ? $size - 1 : 0;
@@ -105,18 +105,17 @@ sub startup {
 
       # Set range for asset
       $asset->start_range($start)->end_range($end);
-  }
-
-  else {
+    }
+    else {
       $headers->add( 'Content-Length' => $size );
-  }
+    }
 
-  $c->res->content->headers($headers);
+    $c->res->content->headers($headers);
 
-  # Stream content directly from file
-  $c->res->content->asset($asset);
-  return $c->rendered($status);
-});
+    # Stream content directly from file
+    $c->res->content->asset($asset);
+    return $c->rendered($status);
+  });
 
   $self->helper( ua => sub {
     my $ua = Pipr::LWPx::ParanoidAgent->new(

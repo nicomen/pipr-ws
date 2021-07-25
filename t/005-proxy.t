@@ -17,13 +17,23 @@ my $t = Test::Mojo->new('Pipr::WS');
 
 $t->app->config->{'allow_local_access'} = 1;
 
-my $test_image_path = "public/images/test.png";
+subtest 'test.png' => sub {
+  my $test_image_path = "public/images/test.png";
+  my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;
+  is($res->headers->header('Content-Type'), 'image/x-png', 'Correct MIME-Type');
+  my $proxied_file = $res->body;
+  my $orig_file = path("share/$test_image_path")->slurp_raw;
+  is_string($proxied_file, $orig_file, 'Files are identical');
+};
 
-my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;
+subtest 'test.jpg' => sub {
+  my $test_image_path = "public/images/test.jpg";
+  my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;
+  is($res->headers->header('Content-Type'), 'image/jpeg', 'Correct MIME-Type');
+  my $proxied_file = $res->body;
+  my $orig_file = path("share/$test_image_path")->slurp_raw;
+  is_string($proxied_file, $orig_file, 'Files are identical');
+};
 
-is($res->headers->header('Content-Type'), 'image/x-png', 'Correct MIME-Type');
-my $proxied_file = $res->body;
-my $orig_file = path("share/$test_image_path")->slurp_raw;
-is_string($proxied_file, $orig_file, 'Files are identical');
 
 done_testing;
