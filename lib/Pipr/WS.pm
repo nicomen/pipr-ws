@@ -30,6 +30,8 @@ our $VERSION = '18.0.0';
 sub startup {
   my ($self) = @_;
 
+  $self->plugin('Systemd');
+
   my $share_dir = path(eval { dist_dir('Pipr-WS') } || ($self->home, 'share'));
   $self->plugin('YamlConfig' => { file => path($share_dir, 'config.yml'), class => 'YAML::XS' });
 
