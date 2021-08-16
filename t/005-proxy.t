@@ -26,6 +26,15 @@ subtest 'test.png' => sub {
   is_string($proxied_file, $orig_file, 'Files are identical');
 };
 
+subtest 'test.png?lol' => sub {
+  my $test_image_path = "public/images/test.png?lol";
+  my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;
+  is($res->headers->header('Content-Type'), 'image/x-png', 'Correct MIME-Type');
+  my $proxied_file = $res->body;
+  my $orig_file = path("share/$test_image_path")->slurp_raw;
+  is_string($proxied_file, $orig_file, 'Files are identical');
+};
+
 subtest 'test.jpg' => sub {
   my $test_image_path = "public/images/test.jpg";
   my $res = $t->get_ok("/test/p/$test_image_path")->status_is(200)->tx->res;

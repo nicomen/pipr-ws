@@ -155,7 +155,7 @@ sub setup_routes {
     my ($c) = @_;
     my ( $site, $url ) = ($c->stash->{site}, $c->stash->{url});
 
-    # $url = get_url("$site/p");
+    $url = Mojo::URL->new($url)->query( $c->req->url->query );
 
     my $site_config = $self->config->{sites}->{ $site };
     if ($self->config->{restrict_targets}) {
@@ -202,7 +202,7 @@ sub setup_routes {
     my ($c) = @_;
     my ( $site, $url ) = ($c->stash->{site}, $c->stash->{url});
 
-    # $url = get_url("$site/dims");
+    $url = Mojo::URL->new($url)->query( $c->req->url->query );
 
     my $local_image = get_image_from_url($c, $url);
     my ( $width, $height, $type ) = Image::Size::imgsize($local_image);
@@ -215,7 +215,7 @@ sub setup_routes {
     my ($c) = @_;
     my ($site, $cmd, $params, $param2, $url ) = map { $c->stash($_) } qw/site cmd params param2 url/;
 
-    # $url = get_url("$site/-/$cmd/$params/$param2");
+    $url = Mojo::URL->new($url)->query( $c->req->url->query );
 
     if ($cmd eq 'scale_crop' && $param2 eq 'center') {
        return gen_image($c, $site, 'scale_crop_centered', $params, $url);
@@ -227,8 +227,9 @@ sub setup_routes {
     my ($c) = @_;
     my ($site, $cmd, $params, $url ) = map { $c->stash($_) } qw/site cmd params url/;
 
+    $url = Mojo::URL->new($url)->query( $c->req->url->query );
+
     $c->log->debug("Executing: $site, $cmd, $params, $url");
-    # $url = get_url("$site/$cmd/$params");
 
     return gen_image($c, $site, $cmd, $params, $url);
   });
@@ -390,6 +391,8 @@ sub get_image_from_url {
 sub download_url {
     my ( $c, $url, $local_file, $ignore_cache ) = @_;
 
+    $url = ref $url ? $url->to_string : $url;
+
     $url =~ s/\?$//;
 
     $c->app->log->debug("downloading url: $url");
@@ -440,20 +443,6 @@ sub download_url {
 
     $c->log->error("Error getting $url: (".($c->req->url).")" . ($res ? $res->status_line : $@) . Dumper($site_config));
     return ($res && $res->is_success);
-}
-
-sub get_url {
-    my ($strip_prefix) = @_;
-
-    my $request_uri = request->request_uri();
-    $request_uri =~ s{ \A /? \Q$strip_prefix\E /? }{}gmx;
-
-    # if we get an URL like: http://pipr.opentheweb.org/overblikk/resized/300x200/http://g.api.no/obscura/external/9E591A/100x510r/http%3A%2F%2Fnifs-cache.api.no%2Fnifs-static%2Fgfx%2Fspillere%2F100%2Fp1172.jpg
-    # We want to re-escape the external URL in the URL (everything is unescaped on the way in)
-    # NOT needed?
-    #    $request_uri =~ s{ \A (.+) (http://.*) \z }{ $1 . URI::Escape::uri_escape($2)}ex;
-
-    return $request_uri;
 }
 
 sub _url2file {

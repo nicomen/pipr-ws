@@ -30,6 +30,13 @@ $t->get_ok("/test/resized/30x30/$test_image_path")->status_is(200, "response sta
 $t->get_ok("/test/resized/30x30/non-existing-image")->status_is(404, "non-existing image returns 404");
 $t->get_ok("/test/resized/30x30/http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image")->status_is(404, "non-existing remote image returns 404");
 
+my $test_image_url_2 = '/images/test.png?lol';
+my $test_image_path_2 = "public$test_image_url";
+$t->get_ok($test_image_url_2)->status_is(200, 'test image exists');
+$t->get_ok("/test/resized/30x30/$test_image_path")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path");
+$t->get_ok("/test/resized/30x30/non-existing-image")->status_is(404, "non-existing image returns 404");
+$t->get_ok("/test/resized/30x30/http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image")->status_is(404, "non-existing remote image returns 404");
+
 my $test_image_url_gz = '/images/test_gzipped.png.gz';
 my $test_image_path_gz = "public$test_image_url_gz";
 $t->get_ok($test_image_url_gz)->status_is(200, 'test image exists');

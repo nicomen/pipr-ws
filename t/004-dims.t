@@ -20,4 +20,12 @@ is_deeply(
   'Check that dimensions are correct'
 );
 
+$test_image_path = "public/images/test.png?lol";
+
+is_deeply(
+  $t->get_ok("/test/dims/$test_image_path")->tx->res->json,
+  { image => { width => 1280, height => 1024, type => 'png' } }, 
+  'Check that dimensions are correct'
+);
+
 done_testing;
