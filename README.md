@@ -3,13 +3,13 @@ pipr-ws
 
 Picture provider. Resizes external images and caches them.
 
-Pipr-ws is set up to acept URLs in the form of http://pipr-ws/&lt;consumer_id>/&lt;action>/(&lt;params>|...)/&lt;url>
+Pipr-ws is set up to acept URLs in the form of http://pipr-ws/<consumer_id>/<action>/(<params>|...)/<url>
 
 It will download the page where the URL points to, cache the result forever, perform an action on it and cache the result of the action forever.
 
 In addition if a URL that is not an image is used, it will try to pick out what seems to be most likely the main image of the page.
 
-The primary cache location is set by the 'cache_dir' key in the configuration file 'config.yml' and it uses the &lt;url> as key
+The primary cache location is set by the 'cache_dir' key in the configuration file 'config.yml' and it uses the <url> as key
 
 The secondary cache (after resizing or cropping) is defined in the plugin part and uses the full url including the action and params:
 
@@ -54,12 +54,8 @@ Usage:
 Tests:
   prove -lv t
 
-Development:
-  bin/app.pl
-
-Production:
-  bin/app.pl --environment production
-
+Start server:
+  bin/pipr-ws daemon
 
 # Dependencies:
 libgd-dev
