@@ -27,6 +27,8 @@ use URI;
 
 our $VERSION = '18.0.0';
 
+my $max_age = 3 * 86400;
+
 sub startup {
   my ($self) = @_;
 
@@ -191,7 +193,7 @@ sub setup_routes {
     my $content_type = $ft->mime_type(<$fh>);
     close($fh);
     # send useful headers & content
-    $c->res->headers->header('Cache-Control' => 'public, max-age=86400');
+    $c->res->headers->header('Cache-Control' => 'public, max-age=' . $max_age);
     $c->res->headers->header('ETag' => $etag);
     $c->res->headers->header('Last-Modified' => $lmod);
 
@@ -331,7 +333,7 @@ sub gen_image {
   eval {
     $res = $switch->{$cmd} ? $switch->{$cmd}->($local_image, $width, $height, $x, $y, $thumb_cache) : $switch->{'default'}->();
     die $res if $res =~ /Internal Server Error/;
-    $c->res->headers->header('Cache-Control' => 'public, max-age=86400');
+    $c->res->headers->header('Cache-Control' => 'public, max-age=' . $max_age);
     $c->res->headers->header('ETag' => $res->{etag});
     $c->res->headers->header('Last-Modified' => $res->{last_modified});
     return $c->render_file( filepath => $res->{file}, headers => $c->res->headers );
