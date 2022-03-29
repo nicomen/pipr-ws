@@ -120,6 +120,7 @@ sub startup {
   });
 
   $self->helper( ua => sub {
+    my $c = shift;
     my $ua = Pipr::LWPx::ParanoidAgent->new(
       agent => 'Reisegiganten PiPr',
       ssl_opts => {
@@ -128,7 +129,7 @@ sub startup {
       },
     );
     $ua->whitelisted_hosts( @{ $self->config->{whitelisted_hosts} } );
-    $ua->timeout($self->config->{timeout});
+    $ua->timeout($self->config->{timeout}) unless $c->stash('refresh');
     $ua;
   });
 
