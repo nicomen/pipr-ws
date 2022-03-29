@@ -348,7 +348,7 @@ sub gen_image {
 sub get_image_from_url {
     my ($c, $url) = @_;
 
-    my $local_image = download_url($c, $url, ($c->stash('refresh') // '') > 1);
+    my $local_image = download_url($c, $url, ($c->stash('refresh') // 0) > 1);
     my $ft          = File::Type->new();
 
     return if !$local_image;
