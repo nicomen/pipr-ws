@@ -14,7 +14,7 @@ The primary cache location is set by the 'cache_dir' key in the configuration fi
 The secondary cache (after resizing or cropping) is defined in the plugin part and uses the full url including the action and params:
 
 ````
-plugins:
+my_plugins:
     Thumbnail:
         cache: /tmp/pipr/thumb_cache
         compression: 7

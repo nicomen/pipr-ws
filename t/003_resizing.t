@@ -20,7 +20,7 @@ my $thumb_cache = tempdir( 'pipr-thumb_cacheXXXX', CLEANUP => 1, );
 my $t = Test::Mojo->new('Pipr::WS');
 $t->app->config->{'allow_local_access'} = 1;
 $t->app->config->{'cache_dir'} = $cache;
-$t->app->config->{'plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
+$t->app->config->{'my_plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
 $t->get_ok('/foo')->status_is(404, 'response status is 404 for /foo');
 
 my $test_image_url = '/images/test.png';

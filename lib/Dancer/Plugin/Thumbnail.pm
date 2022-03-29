@@ -97,7 +97,7 @@ Default is 'undef' (default GD quality for JPEG creation).
 
 Defaults for these options can be specified in config.yml:
 
- plugins:
+my_plugins:
      Thumbnail:
          cache: var/cache
          compression: 7

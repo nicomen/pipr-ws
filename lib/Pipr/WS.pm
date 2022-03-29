@@ -266,7 +266,7 @@ sub gen_image {
     return $c->render( text => "unable to download picture: $url", status => 404 )
       if !$local_image;
 
-    my $thumb_cache = path($c->app->config->{plugins}->{Thumbnail}->{cache}, $site)->stringify;
+    my $thumb_cache = path($c->app->config->{my_plugins}->{Thumbnail}->{cache}, $site)->stringify;
 
     my $headers = $c->req->headers;
     my $switch = {

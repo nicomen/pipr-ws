@@ -29,7 +29,7 @@ engines:
 
 timeout: 20
 
-plugins:
+my_plugins:
     Thumbnail:
         cache: /var/cache/pipr/thumb_cache
         compression: 7

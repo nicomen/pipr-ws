@@ -17,7 +17,7 @@ my $thumb_cache = tempdir( 'pipr-thumb_cacheXXXX', CLEANUP => 1, );
 my $t = Test::Mojo->new('Pipr::WS');
 
 $t->app->config->{'cache_dir'} = $cache;
-$t->app->config->{'plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
+$t->app->config->{'my_plugins'}->{'Thumbnail'}->{'cache'} = $thumb_cache;
 
 $t->app->config->{'sites'}->{'test5'} = {
     sizes => [ '30x30' ],
