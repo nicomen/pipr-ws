@@ -129,7 +129,7 @@ sub startup {
       },
     );
     $ua->whitelisted_hosts( @{ $self->config->{whitelisted_hosts} } );
-    $ua->timeout($self->config->{timeout}) unless $c->stash('refresh');
+    $ua->timeout($c->stash('refresh') ? '180' : $self->config->{timeout});
     $ua;
   });
 
