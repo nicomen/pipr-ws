@@ -138,7 +138,7 @@ sub startup {
     $local_ua;
   });
 
-  $self->hook(before_dispatch => sub  { my $c = shift; if (c->req->url->query->param('refresh')) { $c->stash( 'refresh' => $c->req->url->query->param('refresh') ); $c->req->url->query->remove('refresh'); } });
+  $self->hook(before_dispatch => sub  { my $c = shift; if ($c->req->url->query->param('refresh')) { $c->stash( 'refresh' => $c->req->url->query->param('refresh') ); $c->req->url->query->remove('refresh'); } });
   $self->setup_routes;
 }
 
