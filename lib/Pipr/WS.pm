@@ -138,6 +138,7 @@ sub startup {
     $local_ua;
   });
 
+  $self->hook(before_dispatch => sub  { my $c = shift; $c->stash( 'refresh' => $c->req->url->query->param('refresh') ); $c->req->url->query->remove('refresh'); });
   $self->setup_routes;
 }
 
@@ -269,6 +270,9 @@ sub gen_image {
     my $thumb_cache = path($c->app->config->{my_plugins}->{Thumbnail}->{cache}, $site)->stringify;
 
     my $headers = $c->req->headers;
+    my $opts = {
+      format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers, refresh => $c->stash('refresh'),
+    };
     my $switch = {
         'resized' => sub {
             my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
@@ -277,9 +281,8 @@ sub gen_image {
                 w => $width, h => $height, s => 'force'
               }
             ],
-            {
-              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers
-            });
+            $opts,
+            );
         },
         'scale_crop_centered' => sub {
             my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
@@ -291,9 +294,8 @@ sub gen_image {
                     w => $width, h => $height, a => 'cm'
                   },
             ],
-            {
-              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers
-            });
+            $opts,
+            );
         },
         'cropped' => sub  {
             my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
@@ -305,9 +307,8 @@ sub gen_image {
                     w => $width, h => $height, a => 'rb'
                 },
             ],
-            {
-              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers
-            });
+            $opts,
+            );
         },
         'thumbnail' => sub {
             my ($local_image, $width, $height, $x, $y, $thumb_cache) = @_;
@@ -319,9 +320,8 @@ sub gen_image {
                     w => $width, h => $height, s => 'min'
                 },
             ],
-            {
-              format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers
-            });
+            $opts,
+            );
         },
         'default' => sub {
             my ($c) = @_;
@@ -336,6 +336,7 @@ sub gen_image {
     $c->res->headers->header('Cache-Control' => 'public, max-age=' . $max_age);
     $c->res->headers->header('ETag' => $res->{etag});
     $c->res->headers->header('Last-Modified' => $res->{last_modified});
+    $c->res->headers->header('Pipr-ThumbCache' => $res->{from_cache} ? 'HIT' : 'MISS');
     return $c->render_file( filepath => $res->{file}, headers => $c->res->headers );
     1;
   } or do {
@@ -347,7 +348,7 @@ sub gen_image {
 sub get_image_from_url {
     my ($c, $url) = @_;
 
-    my $local_image = download_url($c, $url);
+    my $local_image = download_url($c, $url, ($c->stash('refresh') // '') > 1);
     my $ft          = File::Type->new();
 
     return if !$local_image;

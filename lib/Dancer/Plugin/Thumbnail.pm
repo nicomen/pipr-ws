@@ -189,8 +189,8 @@ $DB::single = 1;
         $cache_file = path $cache_dir, @cache_hier, $cache_key;
 
         # try to get cached version
-        if ( -f $cache_file ) {
-            return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag };
+        if ( -f $cache_file && !$opts->{refresh}) {
+            return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag, from_cache => 1 };
         }
     }
 

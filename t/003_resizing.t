@@ -26,7 +26,9 @@ $t->get_ok('/foo')->status_is(404, 'response status is 404 for /foo');
 my $test_image_url = '/images/test.png';
 my $test_image_path = "public$test_image_url";
 $t->get_ok($test_image_url)->status_is(200, 'test image exists');
-$t->get_ok("/test/resized/30x30/$test_image_path")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path");
+$t->get_ok("/test/resized/30x30/$test_image_path")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path")->header_is('Pipr-ThumbCache' => 'MISS' );
+$t->get_ok("/test/resized/30x30/$test_image_path")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path")->header_is('Pipr-ThumbCache' => 'HIT' );
+$t->get_ok("/test/resized/30x30/$test_image_path?refresh=1")->status_is(200, "response status is 200 for /test/resized/30x30/$test_image_path")->header_is('Pipr-ThumbCache' => 'MISS' )->or(sub { diag explain $t->tx->res->body; });
 $t->get_ok("/test/resized/30x30/non-existing-image")->status_is(404, "non-existing image returns 404");
 $t->get_ok("/test/resized/30x30/http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image")->status_is(404, "non-existing remote image returns 404");
 
