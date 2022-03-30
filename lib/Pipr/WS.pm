@@ -2,13 +2,13 @@ package Pipr::WS;
 use v5.10;
 
 use Mojo::Base 'Mojolicious';
+use Mojo::Log;
 use Dancer::Plugin::Thumbnail;
 
 use Data::Dumper;
 use Encode qw/encode_utf8/;
 
 use Path::Tiny qw/path/;
-use File::Basename;
 use File::Share 'dist_dir';
 use File::Type;
 use HTML::TreeBuilder;
@@ -36,6 +36,8 @@ sub startup {
 
   my $share_dir = path(eval { dist_dir('Pipr-WS') } || ($self->home, 'share'));
   $self->plugin('YamlConfig' => { file => path($share_dir, 'config.yml'), class => 'YAML::XS' });
+
+  $self->log( Mojo::Log->new( path => $self->config->{logfile}, level => $self->config->{loglevel} ) ) if $self->mode eq 'production';
 
   $self->renderer->paths(["$share_dir/views"]);
   $self->plugin('tt_renderer' => { template_options => {
@@ -72,7 +74,7 @@ sub startup {
       return;
     }
 
-    my $filename     = $args{filename}     || fileparse($filepath);
+    my $filename     = $args{filename}     || path($filepath)->basename;
     my $status       = $args{status}       || 200;
     my $content_type = $args{content_type} || 'image/jpeg';
 
@@ -256,7 +258,7 @@ sub setup_routes {
 
     $url = Mojo::URL->new($url)->query( $c->req->url->query );
 
-    $c->log->debug("Executing: $site, $cmd, $params, $url");
+    $c->app->log->debug("Executing: $site, $cmd, $params, $url");
 
     return gen_image($c, $site, $cmd, $params, $url);
   });
@@ -278,7 +280,7 @@ sub gen_image {
     my $site_config = $c->site_config;
     if ( $c->app->config->{restrict_targets} ) {
         my $info = "'$url' with '$params'";
-        $c->log->debug( "checking $info");
+        $c->app->log->debug( "checking $info");
         return $c->render( text => "no matching targets: $info", status => 403 )
           if !List::Util::first { $url =~ m{ $_ }gmx; }
             @{ $site_config->{allowed_targets} }, keys %{ $site_config->{shortcuts} || {} };
@@ -456,7 +458,8 @@ sub download_url {
         _url2file($url)
     )->stringify;
 
-    path( dirname($local_file) )->mkpath;
+    my $dir_name = path( $local_file )->parent;
+    $dir_name->mkpath;
 
     $c->app->log->debug('local_file: ' . $local_file);
 
@@ -471,7 +474,7 @@ sub download_url {
       return $local_file;
     }
 
-    $c->log->error("Error getting $url: (".($c->req->url).")" . ($res ? $res->status_line : $@) . Dumper($site_config));
+    $c->app->log->error("Error getting $url: (".($c->req->url).")" . ($res ? $res->status_line : $@) . Dumper($site_config));
     return ($res && $res->is_success);
 }
 
