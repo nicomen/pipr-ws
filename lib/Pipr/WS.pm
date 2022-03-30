@@ -113,7 +113,7 @@ sub startup {
     else {
       $headers->add( 'Content-Length' => $size );
     }
-
+    $headers->header('X-Pipr-Url', $c->req->url);
     $c->res->content->headers($headers);
 
     # Stream content directly from file
