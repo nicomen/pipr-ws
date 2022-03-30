@@ -196,9 +196,20 @@ sub setup_routes {
 
     my $ft = File::Type->new();
 
-    undef $/; # slurp
-    my $content_type = $ft->mime_type(<$fh>);
+    my $content_type = 'application/octet-stream';
+    # reads in 16k of selected handle, or returns undef on failure
+    # then checks contents
+    my $pos = tell $fh;
+    if ($pos != -1) {
+      if (seek $fh, 0, Fcntl::SEEK_SET()) {
+        if(read $fh, my $data, 16*1024) {
+          seek $fh, $pos, Fcntl::SEEK_SET();
+          $content_type = $ft->mime_type($data);
+        }
+      }
+    }
     close($fh);
+
     # send useful headers & content
     $c->res->headers->header('Cache-Control' => 'public, max-age=' . $max_age);
     $c->res->headers->header('ETag' => $etag);
