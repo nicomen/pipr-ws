@@ -115,7 +115,7 @@ sub startup {
     $c->res->content->headers($headers);
 
     # Stream content directly from file
-    $c->res->content->asset($asset);
+    $c->res->content->asset($asset) unless $c->req->method eq 'HEAD';
     return $c->rendered($status);
   });
 
@@ -141,10 +141,17 @@ sub startup {
 
   $self->hook(before_dispatch => sub  {
     my $c = shift;
-    if ($c->req->url->query->param('refresh')) {
-      $c->stash( 'refresh' => $c->req->url->query->param('refresh') );
-      $c->req->url->query->remove('refresh'); }
-    });
+    my $refresh = $c->req->url->query->param('refresh');
+    if ($refresh) {
+      $c->stash( 'refresh' => $refresh );
+      $c->req->url->query->remove('refresh');
+    }
+    if ($c->req->method eq 'PATCH') {
+      $c->stash( 'refresh' => 1 );
+    } elsif ($c->req->method eq 'DELETE') {
+      $c->stash( 'refresh' => 2 );
+    }
+  });
   $self->setup_routes;
 }
 
@@ -160,7 +167,7 @@ sub setup_routes {
   });
 
   # Proxy images
-  $r->get('/:site/p/*url' => sub {
+  $r->any('/:site/p/*url' => sub {
     my ($c) = @_;
     my ( $site, $url ) = ($c->stash->{site}, $c->stash->{url});
 
@@ -231,7 +238,7 @@ sub setup_routes {
   });
 
   # support uploadcare style
-  $r->get('/:site/-/:cmd/:params/:param2/*url' => sub {
+  $r->any('/:site/-/:cmd/:params/:param2/*url' => sub {
     my ($c) = @_;
     my ($site, $cmd, $params, $param2, $url ) = map { $c->stash($_) } qw/site cmd params param2 url/;
 
@@ -243,7 +250,7 @@ sub setup_routes {
     return $c->render( text => "illegal command: '$cmd'", status => '401' );
   });
 
-  $r->get('/:site/:cmd/:params/*url' => sub {
+  $r->any('/:site/:cmd/:params/*url' => sub {
     my ($c) = @_;
     my ($site, $cmd, $params, $url ) = map { $c->stash($_) } qw/site cmd params url/;
 
@@ -353,7 +360,7 @@ sub gen_image {
     $c->res->headers->header('Cache-Control' => 'public, max-age=' . $max_age);
     $c->res->headers->header('ETag' => $res->{etag});
     $c->res->headers->header('Last-Modified' => $res->{last_modified});
-    $c->res->headers->header('Pipr-ThumbCache' => $res->{from_cache} ? 'HIT' : 'MISS');
+    $c->res->headers->header('X-Pipr-ThumbCache' => $res->{from_cache} ? 'HIT' : 'MISS');
     return $c->render_file( filepath => $res->{file}, headers => $c->res->headers );
     1;
   } or do {
@@ -375,7 +382,6 @@ sub get_image_from_url {
       if ( $ft->checktype_filename($local_image) =~ m{ \A image }gmx );
 
     $c->app->log->debug("fetching image from '$local_image'");
-
     my $res = $c->local_ua->get("file:$local_image");
 
     return $local_image if $res->headers->content_type =~ m{ \A image }gmx;
@@ -414,6 +420,8 @@ sub download_url {
     $url = ref $url ? $url->to_string : $url;
 
     $url =~ s/\?$//;
+
+    $c->res->headers->header('X-Pipr-Cache', 'HIT');
 
     $c->app->log->debug("downloading url: $url");
 
@@ -455,6 +463,8 @@ sub download_url {
     return $local_file if !$ignore_cache && -e $local_file;
 
     $c->app->log->debug("fetching from the net... ($url)");
+
+    $c->res->headers->header('X-Pipr-Cache', 'MISS');
 
     my $res = eval { $c->ua->get($url, ':content_file' => $local_file); };
     if ($res && $res->is_success) {
