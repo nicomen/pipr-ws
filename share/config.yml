@@ -46,7 +46,9 @@ sites:
   rg:
      sizes: [ '110x90', '230x200', '316x', '711x470', '93x70', 'x470', '980x', '980x400', '966x' ]
      allowed_targets: [ 'http' ]
-     replacements: [ ]
+     replacements: [
+       ['https?://.*?(restplass\.no|sistaminuten\.se|viimehetken\.fi|afbudsrejser\.dk|destination\.se)/guide', 'http://www.restplass.no.prod.reisegiganten.net/guide']
+     ]
   test:
      sizes: [ '30x30', '100x30', '30x', 'x30' ]
      allowed_targets: [ 'public/images/empty.jpg', 'public/images/test', 'non-existing-image', 'http://dghasdfguasdfhgiouasdhfguiohsdfg/non-existing-image' ]
