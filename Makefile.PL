@@ -29,6 +29,7 @@ requires 'Cache::LRU' => 0;
 requires 'LWPx::ParanoidAgent' => 0;
 
 requires 'LWP::UserAgent::Cached' => 0;
+requires 'Path::Tiny';
 requires 'Net::DNS' => 0.81;
 requires 'Image::Size' => 0;
 requires 'HTML::TreeBuilder' => 0;
