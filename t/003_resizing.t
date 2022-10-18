@@ -61,18 +61,18 @@ $t->get_ok("/test/resized/30x30/$empty_image_path")->status_is(400, "response st
 my $image;
 
 $image = $t->get_ok("/test/resized/30x30/$test_image_path")->tx->res->body;
-is_deeply [imgsize(\$image)], [30,30,'JPG'], 'Correct resized width/height (30x30)';
+is_deeply [imgsize(\$image)], [30,30,'WEBP'], 'Correct resized width/height (30x30)';
 
 $image = $t->get_ok("/test/resized/100x30/$test_image_path")->tx->res->body;
-is_deeply [imgsize(\$image)], [100,30,'JPG'], 'Correct resized width/height (100x30)';
+is_deeply [imgsize(\$image)], [100,30,'WEBP'], 'Correct resized width/height (100x30)';
 
 $image = $t->get_ok("/test/resized/30x/$test_image_path")->tx->res->body;
-is_deeply [imgsize(\$image)], [30,24,'JPG'], 'Correct resized width/height (30x(24))';
+is_deeply [imgsize(\$image)], [30,24,'WEBP'], 'Correct resized width/height (30x(24))';
 
 $image = $t->get_ok("/test/resized/x30/$test_image_path")->tx->res->body;
-is_deeply [imgsize(\$image)], [38,30,'JPG'], 'Correct resized width/height ((38)x30)';
+is_deeply [imgsize(\$image)], [38,30,'WEBP'], 'Correct resized width/height ((38)x30)';
 
-$t->get_ok("/test/resized/30x30/$test_image_path")->header_is('Content-Type', 'image/jpeg');
+$t->get_ok("/test/resized/30x30/$test_image_path")->header_is('Content-Type', 'image/webp');
 
 $t->get_ok("/test/resized/30x30/https://www.google.com/images/srpr/logo3w.png")->status_is(403, "not able to fetch illegal images");
 

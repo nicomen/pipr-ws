@@ -155,7 +155,7 @@ $DB::single = 1;
     # target options
     my $compression = $fmt eq 'png' ? $opts->{compression} // $conf->{compression} // -1 : 0;
     my $quality =
-      $fmt eq 'jpeg'
+      (($fmt eq 'jpeg') or ($fmt eq 'webp'))
       ? (
         exists $opts->{quality}
         ? $opts->{quality}
@@ -190,7 +190,7 @@ $DB::single = 1;
 
         # try to get cached version
         if ( -f $cache_file && !$opts->{refresh}) {
-            return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag, from_cache => 1 };
+            return { file => $cache_file->stringify, type => 'image/' . $fmt, last_modified => $lmod, etag => $etag, from_cache => 1 };
         }
     }
 
@@ -318,6 +318,9 @@ $DB::single = 1;
     elsif ($fmt eq 'png') {
       $dst_bytes = $dst_img->$fmt($compression);
     }
+    elsif ($fmt eq 'webp') {
+      $dst_bytes = $dst_img->$fmt($quality);
+    }
     else {
       $c->log->error("unknown format '$fmt'");
       status 500;
@@ -340,7 +343,7 @@ $DB::single = 1;
     }
     $c->log->debug("Returning generated version: " . $cache_file->stringify);
     # send useful headers & content
-    return { file => $cache_file->stringify, type => 'image/jpeg', last_modified => $lmod, etag => $etag };
+    return { file => $cache_file->stringify, type => 'image/' . $fmt, last_modified => $lmod, etag => $etag };
 }
 
 =head2 crop ( $file, \%arguments, \%options )

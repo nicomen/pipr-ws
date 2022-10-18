@@ -296,8 +296,10 @@ sub gen_image {
     my $thumb_cache = path($c->app->config->{my_plugins}->{Thumbnail}->{cache}, $site)->stringify;
 
     my $headers = $c->req->headers;
+    my $out_format = 'webp';
+    my $out_content_type = join '/', 'image', $out_format;
     my $opts = {
-      format => 'jpeg', quality => '100', cache => $thumb_cache, compression => 7, headers => $headers, refresh => $c->stash('refresh'),
+      format => $out_format, quality => '100', cache => $thumb_cache, compression => 7, headers => $headers, refresh => $c->stash('refresh'),
     };
     my $switch = {
         'resized' => sub {
@@ -363,7 +365,7 @@ sub gen_image {
     $c->res->headers->header('ETag' => $res->{etag});
     $c->res->headers->header('Last-Modified' => $res->{last_modified});
     $c->res->headers->header('X-Pipr-ThumbCache' => $res->{from_cache} ? 'HIT' : 'MISS');
-    return $c->render_file( filepath => $res->{file}, headers => $c->res->headers );
+    return $c->render_file( filepath => $res->{file}, content_type => $out_content_type, headers => $c->res->headers );
     1;
   } or do {
       return $c->render( text => 'Unable to load image: ' . substr($@,0,2000), status => 400 );
