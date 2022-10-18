@@ -83,13 +83,6 @@ $t->app->config->{'sites'}->{'test2'} = {
 
 $t->get_ok("/test2/resized/30x30/https://www.google.com/images/srpr/logo3w.png")->status_is(200, "SSL works");
 
-$t->app->config->{'sites'}->{'test3'} = {
-  sizes => [ '30x30' ],
-  allowed_targets => [ 'https://abcnyheter.drpublish.aptoma.no/' ],
-};
-
-$t->get_ok("/test3/resized/30x30/https://abcnyheter.drpublish.aptoma.no/out/images/article//2014/06/16/194406041/1/stor/VI__15__Bombingen_av_Victoria_terrasse.jpg")->status_is(200, "SSL works");
-
 $t->app->config->{'sites'}->{'test4'} = {
   sizes => [ '30x30' ],
   allowed_targets => [ 'https://www.google.no' ],
