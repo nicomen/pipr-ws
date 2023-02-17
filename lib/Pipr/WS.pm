@@ -299,7 +299,7 @@ sub gen_image {
     my $out_format = 'webp';
     my $out_content_type = join '/', 'image', $out_format;
     my $opts = {
-      format => $out_format, quality => '100', cache => $thumb_cache, compression => 7, headers => $headers, refresh => $c->stash('refresh'),
+      format => $out_format, quality => '80', cache => $thumb_cache, compression => 7, headers => $headers, refresh => $c->stash('refresh'),
     };
     my $switch = {
         'resized' => sub {
