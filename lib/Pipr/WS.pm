@@ -49,12 +49,9 @@ sub startup {
   $self->static->paths(["$share_dir/public"]);
   $self->helper('share_dir' => sub { $share_dir });
   $self->helper('site_config' => sub {
-    my ($c, @args) = @_;
-    my $site = $c->stash->{site};
-    my $site_config = $c->stash->{'site_config'};
-    return $site_config if $site_config;
-    die unless $site_config = $self->config->{sites}->{ $site };
-    return $c->stash->{site_config} = $site_config;
+    my ($c) = @_;
+    my $site = $c->stash('site');
+    return $c->stash->{'site_config'} ||= $self->config->{sites}->{ $site };
   });
   $self->helper('allow_local_access' => sub {
     my $c = shift;
@@ -168,14 +165,23 @@ sub setup_routes {
     return $c->render( text => 'Picture Provider/Processor');
   });
 
+  my $rs = $r->under('/:site' => sub {
+    my $c = shift;
+    if (my $site_config = $c->site_config) {
+      return 1;
+    }
+    $c->reply->not_found;
+    return 0;
+  });
+
   # Proxy images
-  $r->any('/:site/p/*url' => sub {
+  $rs->any('/p/*url' => sub {
     my ($c) = @_;
-    my ( $site, $url ) = ($c->stash->{site}, $c->stash->{url});
+    my ( $site, $url ) = ($c->stash('site'), $c->stash('url'));
 
     $url = Mojo::URL->new($url)->query( $c->req->url->query );
 
-    my $site_config = $self->config->{sites}->{ $site };
+    my $site_config = $c->site_config;
     if ($self->config->{restrict_targets}) {
       return $c->render( text => "illegal site: $site", status => 404 ) if ! $site_config;
     }
@@ -227,7 +233,7 @@ sub setup_routes {
     return $c->render_file( filepath => $file, content_type => $content_type, headers => $c->res->headers );
   });
 
-  $r->get('/:site/dims/*url' => sub {
+  $rs->get('/dims/*url' => sub {
     my ($c) = @_;
     my ( $site, $url ) = ($c->stash->{site}, $c->stash->{url});
 
@@ -240,7 +246,7 @@ sub setup_routes {
   });
 
   # support uploadcare style
-  $r->any('/:site/-/:cmd/:params/:param2/*url' => sub {
+  $rs->any('/-/:cmd/:params/:param2/*url' => sub {
     my ($c) = @_;
     my ($site, $cmd, $params, $param2, $url ) = map { $c->stash($_) } qw/site cmd params param2 url/;
 
@@ -252,7 +258,7 @@ sub setup_routes {
     return $c->render( text => "illegal command: '$cmd'", status => '401' );
   });
 
-  $r->any('/:site/:cmd/:params/*url' => sub {
+  $rs->any('/:cmd/:params/*url' => sub {
     my ($c) = @_;
     my ($site, $cmd, $params, $url ) = map { $c->stash($_) } qw/site cmd params url/;
 
